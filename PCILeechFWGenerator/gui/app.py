@@ -90,13 +90,12 @@ def check_system_status() -> SystemStatus:
     status.docker_available = shutil.which("docker") is not None
     status.is_root = os.geteuid() == 0
     
-    try:
-        with open("/sys/kernel/iommu_groups/0/devices", "r") as f:
-            status.iommu_enabled = True
-    except (FileNotFoundError, PermissionError):
-        iommu_groups = Path("/sys/kernel/iommu_groups")
-        if iommu_groups.exists():
+    iommu_groups = Path("/sys/kernel/iommu_groups")
+    if iommu_groups.exists() and iommu_groups.is_dir():
+        try:
             status.iommu_enabled = any(iommu_groups.iterdir())
+        except PermissionError:
+            status.iommu_enabled = False
     
     try:
         result = subprocess.run(
