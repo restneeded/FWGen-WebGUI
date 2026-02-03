@@ -23,6 +23,8 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 PROJECT_ROOT = Path(__file__).parent.parent
+CONFIG_FILE = PROJECT_ROOT / "gui" / "config.json"
+
 BUILD_STATUS: Dict[str, Any] = {
     "running": False,
     "progress": 0,
@@ -32,6 +34,27 @@ BUILD_STATUS: Dict[str, Any] = {
     "output_file": None,
 }
 BUILD_LOCK = threading.Lock()
+
+
+def load_config() -> Dict[str, Any]:
+    """Load configuration from file."""
+    default_config = {
+        "vivado_path": "",
+    }
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE) as f:
+                saved = json.load(f)
+                default_config.update(saved)
+        except Exception:
+            pass
+    return default_config
+
+
+def save_config(config: Dict[str, Any]) -> None:
+    """Save configuration to file."""
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=2)
 
 
 @dataclass
@@ -355,6 +378,49 @@ def api_build_status():
 def api_build_cancel():
     """Cancel current build (not fully implemented - builds should complete)."""
     return jsonify({"status": "cannot cancel - let build complete"})
+
+
+@app.route("/api/settings")
+def api_get_settings():
+    """Get current settings."""
+    config = load_config()
+    vivado_path = config.get("vivado_path", "")
+    vivado_valid = False
+    vivado_version = ""
+    
+    if vivado_path:
+        settings_path = Path(vivado_path) / "settings64.sh"
+        if settings_path.exists():
+            vivado_valid = True
+            version_match = re.search(r"Vivado[/\\](\d+\.\d+)", vivado_path)
+            if version_match:
+                vivado_version = version_match.group(1)
+    
+    return jsonify({
+        "vivado_path": vivado_path,
+        "vivado_valid": vivado_valid,
+        "vivado_version": vivado_version,
+    })
+
+
+@app.route("/api/settings", methods=["POST"])
+def api_save_settings():
+    """Save settings."""
+    data = request.json
+    config = load_config()
+    
+    if "vivado_path" in data:
+        vivado_path = data["vivado_path"].strip()
+        if vivado_path:
+            settings_path = Path(vivado_path) / "settings64.sh"
+            if not settings_path.exists():
+                return jsonify({
+                    "error": f"Invalid Vivado path: settings64.sh not found in {vivado_path}"
+                }), 400
+        config["vivado_path"] = vivado_path
+    
+    save_config(config)
+    return jsonify({"status": "saved"})
 
 
 if __name__ == "__main__":

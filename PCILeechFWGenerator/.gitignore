@@ -68,3 +68,4 @@ template_variables_report.json
 src/file_management/donor_info.json
 message.txt
 BUILD_LOG_ANALYSIS.md
+gui/config.json

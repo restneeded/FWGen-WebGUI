@@ -343,6 +343,20 @@
             </button>
         </div>
         
+        <div class="card">
+            <div class="card-title">Settings</div>
+            
+            <div class="form-group">
+                <label for="vivado-path">Vivado Installation Path</label>
+                <input type="text" id="vivado-path" placeholder="/tools/Xilinx/Vivado/2023.2">
+                <div class="device-info" id="vivado-status"></div>
+            </div>
+            
+            <button class="btn" style="background: var(--text-secondary);" onclick="saveSettings()">
+                Save Settings
+            </button>
+        </div>
+        
         <div class="card progress-container" id="progress-card">
             <div class="card-title">Build Progress</div>
             <div class="progress-bar">
@@ -559,9 +573,58 @@
                 .replace(/"/g, '&quot;');
         }
         
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                const settings = await res.json();
+                
+                document.getElementById('vivado-path').value = settings.vivado_path || '';
+                
+                const statusEl = document.getElementById('vivado-status');
+                if (settings.vivado_path) {
+                    if (settings.vivado_valid) {
+                        statusEl.textContent = 'Valid Vivado installation' + 
+                            (settings.vivado_version ? ' (v' + settings.vivado_version + ')' : '');
+                        statusEl.style.color = 'var(--success)';
+                    } else {
+                        statusEl.textContent = 'Invalid path - settings64.sh not found';
+                        statusEl.style.color = 'var(--error)';
+                    }
+                } else {
+                    statusEl.textContent = 'Not configured - required for synthesis';
+                    statusEl.style.color = 'var(--text-secondary)';
+                }
+            } catch (e) {
+                console.error('Settings error:', e);
+            }
+        }
+        
+        async function saveSettings() {
+            const vivadoPath = document.getElementById('vivado-path').value.trim();
+            
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({vivado_path: vivadoPath})
+                });
+                
+                if (res.ok) {
+                    loadSettings();
+                    alert('Settings saved');
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save'));
+                }
+            } catch (e) {
+                alert('Error saving settings: ' + e.message);
+            }
+        }
+        
         refreshStatus();
         loadDevices();
         loadBoards();
+        loadSettings();
     </script>
 </body>
 </html>
