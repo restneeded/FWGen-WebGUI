@@ -130,11 +130,15 @@ BOARD_DIRS = {
     "screamer_m2": "ScreamerM2",
     "ac701_ft601": "ac701_ft601",
     "acorn_ft2232h": "acorn_ft2232h",
-    "captain_dma": "CaptainDMA",
+    "captain_100t484": "CaptainDMA/100t484-1",
+    "captain_35t325_x1": "CaptainDMA/35t325_x1",
+    "captain_35t325_x4": "CaptainDMA/35t325_x4",
+    "captain_35t484_x1": "CaptainDMA/35t484_x1",
+    "captain_75t484_x1": "CaptainDMA/75t484_x1",
     "gbox": "GBOX",
     "netv2": "NeTV2",
     "sp605_ft601": "sp605_ft601",
-    "zdma": "ZDMA",
+    "zdma_100t": "ZDMA/100T",
 }
 
 
@@ -147,11 +151,15 @@ def get_available_boards() -> List[Dict[str, str]]:
         {"id": "screamer_m2", "name": "Screamer M2", "description": "LambdaConcept Screamer M.2"},
         {"id": "ac701_ft601", "name": "AC701", "description": "Xilinx AC701 with FT601"},
         {"id": "acorn_ft2232h", "name": "Acorn", "description": "SQRL Acorn with FT2232H"},
-        {"id": "captain_dma", "name": "CaptainDMA", "description": "CaptainDMA Board"},
+        {"id": "captain_100t484", "name": "CaptainDMA 100T484", "description": "CaptainDMA Artix-7 100T"},
+        {"id": "captain_35t325_x1", "name": "CaptainDMA 35T325 x1", "description": "CaptainDMA Artix-7 35T/325T x1 lane"},
+        {"id": "captain_35t325_x4", "name": "CaptainDMA 35T325 x4", "description": "CaptainDMA Artix-7 35T/325T x4 lane"},
+        {"id": "captain_35t484_x1", "name": "CaptainDMA 35T484 x1", "description": "CaptainDMA Artix-7 35T484 x1 lane"},
+        {"id": "captain_75t484_x1", "name": "CaptainDMA 75T484 x1", "description": "CaptainDMA Artix-7 75T484 x1 lane"},
         {"id": "gbox", "name": "GBOX", "description": "GBOX Board"},
         {"id": "netv2", "name": "NeTV2", "description": "Kosagi NeTV2"},
         {"id": "sp605_ft601", "name": "SP605", "description": "Xilinx SP605 with FT601"},
-        {"id": "zdma", "name": "ZDMA", "description": "ZDMA Board"},
+        {"id": "zdma_100t", "name": "ZDMA 100T", "description": "ZDMA Artix-7 100T"},
     ]
     return boards
 
