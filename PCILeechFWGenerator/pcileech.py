@@ -1052,6 +1052,9 @@ def run_container_templating(args):
     
     # Single logging point for final decision
     if use_container:
+        # runtime cannot be None here - can_use_container is True only when runtime is not None
+        # This assertion satisfies the type checker and documents the invariant
+        assert runtime is not None, "Container mode requires detected runtime"
         log_info_safe(
             logger,
             safe_format(

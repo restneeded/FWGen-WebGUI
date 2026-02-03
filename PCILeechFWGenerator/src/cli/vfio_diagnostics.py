@@ -590,6 +590,13 @@ class Diagnostics:
 
     # Device‑specific ---------------------------------------------------------
     def _device_exists(self):
+        if self.device_bdf is None:
+            self._append(
+                name="Device",
+                status=Status.ERROR,
+                message="No device BDF specified",
+            )
+            return
         try:
             path_manager = VFIOPathManager(self.device_bdf)
             if path_manager.device_path.exists():

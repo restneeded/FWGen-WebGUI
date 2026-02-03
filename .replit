@@ -22,9 +22,9 @@ args = "CLI Help Check"
 name = "CLI Help Check"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd PCILeechFWGenerator && python3 pcileech.py --help"
-
-[workflows.workflow.metadata]
-outputType = "console"

@@ -1180,17 +1180,21 @@ def test_configuration_manager_create_from_args(mock_args, mock_logger):
     """Test ConfigurationManager.create_from_args()."""
     manager = ConfigurationManager(mock_logger)
 
-    # Mock _validate_args to avoid validation
+    # Mock _validate_args and VFIO decision to simulate VFIO-enabled environment
+    mock_vfio_decision = mock.MagicMock()
+    mock_vfio_decision.enabled = True
+    
     with mock.patch.object(manager, "_validate_args"):
-        config = manager.create_from_args(mock_args)
+        with mock.patch("pcileechfwgenerator.build.make_vfio_decision", return_value=mock_vfio_decision):
+            config = manager.create_from_args(mock_args)
 
-        # Check that config was created correctly
-        assert config.bdf == mock_args.bdf
-        assert config.board == mock_args.board
-        assert config.output_dir == Path(mock_args.output).resolve()
-        assert config.enable_profiling == (mock_args.profile > 0)
-        assert config.preload_msix == mock_args.preload_msix
-        assert config.profile_duration == mock_args.profile
+            # Check that config was created correctly
+            assert config.bdf == mock_args.bdf
+            assert config.board == mock_args.board
+            assert config.output_dir == Path(mock_args.output).resolve()
+            assert config.enable_profiling == (mock_args.profile > 0)
+            assert config.preload_msix == mock_args.preload_msix
+            assert config.profile_duration == mock_args.profile
 
 
 # ============================================================================

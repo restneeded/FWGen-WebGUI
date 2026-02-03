@@ -527,6 +527,8 @@ class BarContentGenerator:
         self, samples: list, bar_index: int, width: int = 40
     ) -> None:
         """Render entropy visualization using Rich."""
+        if Console is None:
+            return
         console = Console()
         for offset, entropy in samples:
             # Color by entropy level

@@ -41,6 +41,7 @@ class TestPCILeechIntegration(unittest.TestCase):
         if self.test_dir.exists():
             shutil.rmtree(self.test_dir)
 
+    @pytest.mark.skipif(not (Path(__file__).parent.parent / ".git").exists(), reason="Test requires git repository")
     def test_repository_cloning(self):
         """Test that the pcileech-fpga repository can be cloned."""
         # Test repository cloning/verification

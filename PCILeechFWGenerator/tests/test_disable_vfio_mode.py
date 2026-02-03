@@ -30,22 +30,34 @@ def _make_args(tmp_path, profile=0):
 
 class TestDisableVFIOConfig:
     def test_env_flags_drive_disable_vfio(self, monkeypatch, tmp_path):
+        from unittest import mock
+        from pcileechfwgenerator.build import make_vfio_decision
+        
         cm = ConfigurationManager()
 
-        # baseline: no env -> disabled False
+        # Create a mock VFIO decision for when VFIO is "available"
+        mock_vfio_enabled = mock.MagicMock()
+        mock_vfio_enabled.enabled = True
+        
+        mock_vfio_disabled = mock.MagicMock()
+        mock_vfio_disabled.enabled = False
+
+        # baseline: no env -> disabled False (mocking VFIO as available)
         args = _make_args(tmp_path, profile=10)
-        cfg = cm.create_from_args(args)
-        assert cfg.disable_vfio is False
-        assert cfg.enable_profiling is True
-        assert cfg.profile_duration == 10
+        with mock.patch("pcileechfwgenerator.build.make_vfio_decision", return_value=mock_vfio_enabled):
+            cfg = cm.create_from_args(args)
+            assert cfg.disable_vfio is False
+            assert cfg.enable_profiling is True
+            assert cfg.profile_duration == 10
 
         # explicit disable via PCILEECH_DISABLE_VFIO
         monkeypatch.setenv('PCILEECH_DISABLE_VFIO', '1')
         args = _make_args(tmp_path, profile=10)
-        cfg = cm.create_from_args(args)
-        assert cfg.disable_vfio is True
-        assert cfg.enable_profiling is False
-        assert cfg.profile_duration == 0
+        with mock.patch("pcileechfwgenerator.build.make_vfio_decision", return_value=mock_vfio_disabled):
+            cfg = cm.create_from_args(args)
+            assert cfg.disable_vfio is True
+            assert cfg.enable_profiling is False
+            assert cfg.profile_duration == 0
         monkeypatch.delenv('PCILEECH_DISABLE_VFIO', raising=False)
 
         # host-context-only flag
