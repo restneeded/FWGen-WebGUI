@@ -53,7 +53,7 @@ Preferred communication style: Simple, everyday language.
 
 The foolproof workflow for cloning donor PCIe cards:
 
-1. **Capture donor**: Run `python3 pcileech.py build --bdf <BDF> --board pcileech_enigma_x1 --build-dir ./output --host-collect-only`
+1. **Capture donor**: Run `sudo ./scripts/clone_donor.sh <BDF> ./output --build`
 2. **Auto-injection**: The generator automatically copies `.coe` files with donor device IDs to `lib/voltcyclone-fpga/EnigmaX1/ip/`
 3. **Vivado build**: In Vivado Tcl Shell, run `source vivado_full_rebuild.tcl -notrace`
 4. **Output**: `.bin` file at `lib/voltcyclone-fpga/EnigmaX1/pcileech_enigma_x1.bin`
@@ -65,6 +65,9 @@ The foolproof workflow for cloning donor PCIe cards:
 
 **Why this workflow**:
 Vivado caches IP core data at project creation time. If you generate .coe files AFTER creating the project, Vivado uses cached template values. The `vivado_full_rebuild.tcl` script ensures fresh .coe data is used by deleting the project and re-creating it.
+
+**Container Mode for Best Results**:
+Full BAR/MMIO learning (for the most accurate donor copy) requires container mode (podman or docker). The clone script automatically uses container mode when available. Without a container runtime, only basic config space capture is performed.
 
 ### Testing Strategy
 

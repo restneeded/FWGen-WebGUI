@@ -165,12 +165,24 @@ cd "$PROJECT_ROOT"
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Run the generator
+# Run the generator with full VFIO + MMIO learning
+# Container mode provides best donor copy (full BAR + MMIO trace capture)
+# If podman/docker available, uses container; otherwise falls back to local
+#
+# Force container mode for best results (requires podman or docker)
+if command -v podman &> /dev/null || command -v docker &> /dev/null; then
+    echo "  Container runtime found - using container mode for full BAR/MMIO capture"
+    CONTAINER_FLAG="--container-mode=container"
+else
+    echo "  No container runtime - using local mode (MMIO learning disabled)"
+    CONTAINER_FLAG="--container-mode=local"
+fi
+
 python3 pcileech.py build \
     --bdf "$PCI_BDF" \
     --board "$BOARD_TYPE" \
     --build-dir "$OUTPUT_DIR" \
-    --host-collect-only \
+    $CONTAINER_FLAG \
     --verbose
 
 if [ $? -ne 0 ]; then
