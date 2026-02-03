@@ -26,6 +26,7 @@ from ..string_utils import (
     safe_format,
     safe_print_format,
 )
+from .repo_manager import RepoManager
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,167 @@ class FileManager:
             prefix="FILEMGR",
         )
         return file_path
+
+    def copy_coe_to_board_ip(
+        self,
+        board_type: str,
+        vendor_id: int = 0,
+        device_id: int = 0,
+        strict: bool = False,
+    ) -> Dict[str, Path]:
+        """
+        Copy generated .coe files from output directory to the board's IP directory.
+        
+        This MUST be done BEFORE running vivado_generate_project.tcl to ensure
+        the generated donor device IDs are baked into the Vivado IP cores.
+        
+        Args:
+            board_type: Target board type (e.g., 'pcileech_enigma_x1')
+            vendor_id: Vendor ID for logging purposes
+            device_id: Device ID for logging purposes
+            strict: If True, raise an error if required .coe files are missing
+            
+        Returns:
+            Dictionary mapping source files to destination paths
+            
+        Raises:
+            FileNotFoundError: If strict=True and required .coe files are missing
+            ValueError: If board_type is not valid
+        """
+        copied_files: Dict[str, Path] = {}
+        missing_files: List[str] = []
+        
+        try:
+            board_ip_dir = RepoManager.get_board_path(board_type) / "ip"
+        except (ValueError, KeyError) as e:
+            error_msg = safe_format(
+                "Invalid board type '{board}': {err}",
+                board=board_type,
+                err=str(e),
+            )
+            log_error_safe(logger, error_msg, prefix="FILEMGR")
+            if strict:
+                raise ValueError(error_msg) from e
+            return copied_files
+            
+        if not board_ip_dir.exists():
+            error_msg = safe_format(
+                "Board IP directory does not exist: {path}",
+                path=str(board_ip_dir),
+            )
+            log_error_safe(logger, error_msg, prefix="FILEMGR")
+            if strict:
+                raise FileNotFoundError(error_msg)
+            return copied_files
+            
+        src_dir = self.output_dir / "src"
+        ip_dir = self.output_dir / "ip"
+        
+        required_coe_files = [
+            ("pcileech_cfgspace.coe", "pcileech_cfgspace.coe", True),
+        ]
+        optional_coe_files = [
+            ("pcileech_cfgspace_writemask.coe", "pcileech_cfgspace_writemask.coe", False),
+            ("pcileech_bar_zero4k.coe", "pcileech_bar_zero4k.coe", False),
+        ]
+        all_coe_files = required_coe_files + optional_coe_files
+        
+        log_info_safe(
+            logger,
+            safe_format(
+                "Injecting device IDs into IP configuration files",
+            ),
+            prefix="FILEMGR",
+        )
+        if vendor_id or device_id:
+            log_info_safe(
+                logger,
+                safe_format(
+                    "  Device: 0x{device_id:04X}  Vendor: 0x{vendor_id:04X}",
+                    device_id=device_id,
+                    vendor_id=vendor_id,
+                ),
+                prefix="FILEMGR",
+            )
+        
+        for src_filename, dst_filename, is_required in all_coe_files:
+            src_file = src_dir / src_filename
+            if not src_file.exists():
+                src_file = ip_dir / src_filename
+            
+            if src_file.exists():
+                dst_file = board_ip_dir / dst_filename
+                try:
+                    shutil.copy2(src_file, dst_file)
+                    copied_files[src_filename] = dst_file
+                    log_info_safe(
+                        logger,
+                        safe_format(
+                            "  Copied {src} -> {dst}",
+                            src=src_filename,
+                            dst=str(dst_file),
+                        ),
+                        prefix="FILEMGR",
+                    )
+                except (shutil.Error, OSError) as e:
+                    log_error_safe(
+                        logger,
+                        safe_format(
+                            "Failed to copy {src}: {err}",
+                            src=src_filename,
+                            err=str(e),
+                        ),
+                        prefix="FILEMGR",
+                    )
+                    if is_required:
+                        missing_files.append(src_filename)
+            else:
+                if is_required:
+                    missing_files.append(src_filename)
+                    log_error_safe(
+                        logger,
+                        safe_format(
+                            "  MISSING REQUIRED: {filename} (expected at {path})",
+                            filename=src_filename,
+                            path=str(src_dir / src_filename),
+                        ),
+                        prefix="FILEMGR",
+                    )
+                else:
+                    log_warning_safe(
+                        logger,
+                        safe_format(
+                            "  Missing optional: {filename}",
+                            filename=src_filename,
+                        ),
+                        prefix="FILEMGR",
+                    )
+        
+        if missing_files:
+            error_msg = safe_format(
+                "Failed to inject donor data - missing required .coe files: {files}",
+                files=", ".join(missing_files),
+            )
+            log_error_safe(logger, error_msg, prefix="FILEMGR")
+            if strict:
+                raise FileNotFoundError(error_msg)
+        elif copied_files:
+            log_info_safe(
+                logger,
+                safe_format(
+                    "Copied {count} .coe files to {board_dir}",
+                    count=len(copied_files),
+                    board_dir=str(board_ip_dir),
+                ),
+                prefix="FILEMGR",
+            )
+            log_info_safe(
+                logger,
+                "Run 'source vivado_full_rebuild.tcl' in Vivado to build with this donor data",
+                prefix="FILEMGR",
+            )
+        
+        return copied_files
 
     def cleanup_intermediate_files(self) -> List[str]:
         """Clean up intermediate files, keeping only final outputs and logs."""

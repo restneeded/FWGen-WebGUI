@@ -1937,6 +1937,52 @@ class PCILeechGenerator:
                 prefix="MODL",
             )
 
+            # Copy .coe files to board IP directory for Vivado build
+            board_type = getattr(self.config, "board_type", None)
+            if not board_type:
+                raise PCILeechGenerationError(
+                    "No board_type configured. Specify --board to inject donor data. "
+                    "Example: --board pcileech_enigma_x1"
+                )
+            else:
+                try:
+                    from ..file_management.file_manager import FileManager
+                    
+                    file_manager = FileManager(output_dir)
+                    metadata = generation_result.get("generation_metadata", {})
+                    vid_raw = metadata.get("vendor_id", 0)
+                    did_raw = metadata.get("device_id", 0)
+                    vendor_id = int(vid_raw, 16) if isinstance(vid_raw, str) else (vid_raw or 0)
+                    device_id = int(did_raw, 16) if isinstance(did_raw, str) else (did_raw or 0)
+                    
+                    file_manager.copy_coe_to_board_ip(
+                        board_type=board_type,
+                        vendor_id=vendor_id,
+                        device_id=device_id,
+                        strict=True,
+                    )
+                except FileNotFoundError as fnf_err:
+                    log_error_safe(
+                        self.logger,
+                        safe_format(
+                            "CRITICAL: Failed to inject donor data - {err}",
+                            err=str(fnf_err),
+                        ),
+                        prefix="MODL",
+                    )
+                    raise PCILeechGenerationError(
+                        safe_format("Donor data injection failed: {err}", err=fnf_err)
+                    ) from fnf_err
+                except Exception as copy_err:
+                    log_warning_safe(
+                        self.logger,
+                        safe_format(
+                            "Could not auto-copy .coe files to board IP: {err}",
+                            err=str(copy_err),
+                        ),
+                        prefix="MODL",
+                    )
+
             return output_dir
 
         except Exception as e:

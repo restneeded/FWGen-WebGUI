@@ -49,6 +49,23 @@ Preferred communication style: Simple, everyday language.
 - **`ConfigSpaceManager`** (`src/device_clone/config_space_manager.py`): Parses 4KB PCIe configuration space
 - **`PCILeechGenerator`** (`src/device_clone/generator.py`): Generates complete firmware packages from device configuration
 
+### Donor Cloning Workflow
+
+The foolproof workflow for cloning donor PCIe cards:
+
+1. **Capture donor**: Run `python3 pcileech.py build --bdf <BDF> --board pcileech_enigma_x1 --build-dir ./output --host-collect-only`
+2. **Auto-injection**: The generator automatically copies `.coe` files with donor device IDs to `lib/voltcyclone-fpga/EnigmaX1/ip/`
+3. **Vivado build**: In Vivado Tcl Shell, run `source vivado_full_rebuild.tcl -notrace`
+4. **Output**: `.bin` file at `lib/voltcyclone-fpga/EnigmaX1/pcileech_enigma_x1.bin`
+
+**Critical files**:
+- `vivado_full_rebuild.tcl` - Deletes old project, copies fresh .coe files, creates new project, runs synthesis
+- `pcileech_cfgspace.coe` - Contains donor device IDs, gets baked into IP cores
+- `scripts/clone_donor.sh` - Helper script for the complete workflow
+
+**Why this workflow**:
+Vivado caches IP core data at project creation time. If you generate .coe files AFTER creating the project, Vivado uses cached template values. The `vivado_full_rebuild.tcl` script ensures fresh .coe data is used by deleting the project and re-creating it.
+
 ### Testing Strategy
 
 - Pytest with markers for `tui`, `unit`, and `integration` tests
