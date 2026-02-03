@@ -492,6 +492,18 @@
             <button class="btn" style="background: var(--text-secondary);" onclick="saveSettings()">
                 Save Settings
             </button>
+            
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Maintenance</div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn" style="background: var(--warning); font-size: 0.8rem; padding: 0.5rem 1rem;" onclick="cleanupBuild()">
+                        Clean Build Files
+                    </button>
+                    <button class="btn" style="background: var(--text-secondary); font-size: 0.8rem; padding: 0.5rem 1rem;" onclick="viewErrorLog()">
+                        View Error Log
+                    </button>
+                </div>
+            </div>
         </div>
         
         <div class="card progress-container" id="progress-card">
@@ -813,6 +825,63 @@
                 }
             } catch (e) {
                 alert('Error saving settings: ' + e.message);
+            }
+        }
+        
+        async function cleanupBuild() {
+            if (!confirm('This will delete temporary build files (container images, cached data, intermediate artifacts). Continue?')) {
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/cleanup', {method: 'POST'});
+                const data = await res.json();
+                
+                if (res.ok) {
+                    alert('Cleanup complete!\n\n' + data.message);
+                } else {
+                    alert('Cleanup failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Cleanup error: ' + e.message);
+            }
+        }
+        
+        async function viewErrorLog() {
+            try {
+                const res = await fetch('/api/error-log');
+                const data = await res.json();
+                
+                const log = data.log || '(No errors logged)';
+                
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1000;';
+                modal.innerHTML = `
+                    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;width:90%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;">
+                        <div style="padding:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-weight:600;">Error Log</span>
+                            <div>
+                                <button onclick="clearErrorLog()" style="background:var(--error);color:white;border:none;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;margin-right:0.5rem;font-size:0.8rem;">Clear Log</button>
+                                <button onclick="this.closest('div').parentElement.parentElement.remove()" style="background:var(--text-secondary);color:white;border:none;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;">Close</button>
+                            </div>
+                        </div>
+                        <pre style="padding:1rem;overflow:auto;flex:1;font-family:monospace;font-size:0.75rem;white-space:pre-wrap;color:var(--text-secondary);">${log.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            } catch (e) {
+                alert('Error loading log: ' + e.message);
+            }
+        }
+        
+        async function clearErrorLog() {
+            try {
+                await fetch('/api/error-log/clear', {method: 'POST'});
+                document.querySelector('div[style*="position:fixed"]')?.remove();
+                alert('Error log cleared');
+            } catch (e) {
+                alert('Error: ' + e.message);
             }
         }
         

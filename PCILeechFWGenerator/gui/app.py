@@ -453,6 +453,75 @@ def api_save_settings():
     return jsonify({"status": "saved"})
 
 
+@app.route("/api/cleanup", methods=["POST"])
+def api_cleanup():
+    """Clean up build artifacts and temporary files."""
+    cleaned = []
+    errors = []
+    
+    cleanup_dirs = [
+        PROJECT_ROOT / "output",
+        PROJECT_ROOT / ".cache",
+        PROJECT_ROOT / "__pycache__",
+        PROJECT_ROOT / "src" / "__pycache__",
+    ]
+    
+    for d in cleanup_dirs:
+        if d.exists() and d.is_dir():
+            try:
+                for item in d.iterdir():
+                    if item.is_file():
+                        item.unlink()
+                    elif item.is_dir():
+                        shutil.rmtree(item)
+                cleaned.append(str(d.relative_to(PROJECT_ROOT)))
+            except Exception as e:
+                errors.append(f"{d.name}: {e}")
+    
+    cleanup_patterns = ["*.pyc", "*.pyo", "*.log"]
+    for pattern in cleanup_patterns:
+        for f in PROJECT_ROOT.rglob(pattern):
+            if ".git" not in str(f) and "venv" not in str(f):
+                try:
+                    f.unlink()
+                    cleaned.append(str(f.relative_to(PROJECT_ROOT)))
+                except Exception:
+                    pass
+    
+    runtime = None
+    for cmd in ["podman", "docker"]:
+        if shutil.which(cmd):
+            runtime = cmd
+            break
+    
+    if runtime:
+        try:
+            result = subprocess.run(
+                [runtime, "image", "ls", "-q", "--filter", "reference=*pcileech*"],
+                capture_output=True, text=True, timeout=30
+            )
+            if result.stdout.strip():
+                images = result.stdout.strip().split('\n')
+                for img in images[:5]:
+                    subprocess.run([runtime, "rmi", "-f", img], capture_output=True, timeout=60)
+                cleaned.append(f"Removed {len(images)} container image(s)")
+        except Exception as e:
+            errors.append(f"Container cleanup: {e}")
+    
+    msg_parts = []
+    if cleaned:
+        msg_parts.append(f"Cleaned: {len(cleaned)} items")
+    if errors:
+        msg_parts.append(f"Errors: {len(errors)}")
+    
+    return jsonify({
+        "status": "ok",
+        "message": " | ".join(msg_parts) if msg_parts else "Nothing to clean",
+        "cleaned": cleaned[:20],
+        "errors": errors
+    })
+
+
 @app.route("/api/error-log")
 def api_error_log():
     """Get error log contents."""
