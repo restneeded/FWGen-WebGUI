@@ -411,14 +411,20 @@
                 devices = await res.json();
                 
                 const select = document.getElementById('device-select');
-                select.innerHTML = '<option value="">Select a device...</option>';
                 
-                devices.forEach(dev => {
-                    const opt = document.createElement('option');
-                    opt.value = dev.bdf;
-                    opt.textContent = dev.display;
-                    select.appendChild(opt);
-                });
+                if (devices.length === 0) {
+                    select.innerHTML = '<option value="">No VFIO-bound devices found</option>';
+                    document.getElementById('device-info').textContent = 
+                        'Bind a device to vfio-pci first (echo BDF > /sys/bus/pci/drivers/vfio-pci/bind)';
+                } else {
+                    select.innerHTML = '<option value="">Select a device...</option>';
+                    devices.forEach(dev => {
+                        const opt = document.createElement('option');
+                        opt.value = dev.bdf;
+                        opt.textContent = dev.display;
+                        select.appendChild(opt);
+                    });
+                }
                 
                 select.onchange = function() {
                     const dev = devices.find(d => d.bdf === this.value);

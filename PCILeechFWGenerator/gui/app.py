@@ -86,8 +86,17 @@ def check_system_status() -> SystemStatus:
     return status
 
 
+def is_vfio_bound(bdf: str) -> bool:
+    """Check if a PCI device is bound to vfio-pci driver."""
+    driver_path = Path(f"/sys/bus/pci/devices/{bdf}/driver")
+    if driver_path.is_symlink():
+        driver_name = os.path.basename(os.readlink(str(driver_path)))
+        return driver_name == "vfio-pci"
+    return False
+
+
 def get_pci_devices() -> List[Dict[str, str]]:
-    """Get list of PCI devices suitable for cloning."""
+    """Get list of PCI devices bound to VFIO driver."""
     devices = []
     try:
         result = subprocess.run(
@@ -106,8 +115,7 @@ def get_pci_devices() -> List[Dict[str, str]]:
                 )
                 if match:
                     bdf, dev_class, class_code, name, vendor_id, device_id = match.groups()
-                    skip_classes = ["0600", "0601", "0604", "0605", "0780"]
-                    if class_code not in skip_classes:
+                    if is_vfio_bound(bdf):
                         devices.append({
                             "bdf": bdf,
                             "name": name[:60] + "..." if len(name) > 60 else name,
