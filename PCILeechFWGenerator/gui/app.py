@@ -33,12 +33,15 @@ logging.basicConfig(
     format='%(asctime)s | %(levelname)-7s | %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("pcileech_gui")
+logger.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler(ERROR_LOG_FILE)
+ERROR_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+file_handler = logging.FileHandler(ERROR_LOG_FILE, mode='a')
 file_handler.setLevel(logging.WARNING)
 file_handler.setFormatter(logging.Formatter('%(asctime)s | %(levelname)-7s | %(message)s'))
 logger.addHandler(file_handler)
+logger.propagate = True
 
 
 def log_error(message: str, exception: Exception = None):

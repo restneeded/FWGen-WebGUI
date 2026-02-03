@@ -1,0 +1,100 @@
+[1/2] STEP 7/8: COPY src/cli/vfio_constants.py ./src/cli/
+--> Using cache 274935fbdf468bda57f329758329095c7e789c0e870b6affd2a2727a50cee174
+--> 274935fbdf46
+[1/2] STEP 8/8: RUN mkdir -p src/cli && chmod +x build_vfio_constants.sh && (./build_vfio_constants.sh && cp src/cli/vfio_constants.py vfio_constants_patched.py) || (echo "⚠ VFIO constants build failed, using original" && cp src/cli/vfio_constants.py vfio_constants_patched.py) && echo "Content of patched file:" && head -20 vfio_constants_patched.py | grep -A 10 "Ioctl numbers" || echo "No ioctl numbers section found"
+--> Using cache c9a1c728741c13405e38eee38167e98a4d7f4d5b12d39fa3ced1af20cf0ec45b
+--> c9a1c728741c
+[2/2] STEP 1/22: FROM ubuntu:22.04 AS runtime
+[2/2] STEP 2/22: ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8 TZ=UTC PCILEECH_PRODUCTION_MODE=true PCILEECH_ALLOW_MOCK_DATA=false PCILEECH_CONTAINER_MODE=true
+--> Using cache ce06a0b3f760969fab0d93ebe243704b2d061fbf1c994a019aa64d50d0878692
+--> ce06a0b3f760
+[2/2] STEP 3/22: RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip pciutils bsdextrautils kmod ca-certificates git sudo && apt-get clean && rm -rf /var/lib/apt/lists/*
+--> Using cache 84d9f2089c73d727ba141e12551f9b3046236188b4739f45b0f2a1f0e0daa76a
+--> 84d9f2089c73
+[2/2] STEP 4/22: RUN useradd -m -r appuser && echo "appuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && echo "Defaults !requiretty" >> /etc/sudoers
+--> Using cache fe8b13c98a824f9ed876984fb8b9dc7e3c377dffceacaba0f40c2f55318ced1f
+--> fe8b13c98a82
+[2/2] STEP 5/22: WORKDIR /app
+--> Using cache 024ff2e97019489d92b77bafa0a51e3437693692f9da57f85fc90031b685ffe1
+--> 024ff2e97019
+[2/2] STEP 6/22: COPY requirements.txt requirements-tui.txt ./
+--> Using cache 584819db4d5ad19d253bb04f4ba626f4d7695fc6cc23535d3d7ee7d120dfa6db
+--> 584819db4d5a
+[2/2] STEP 7/22: RUN pip3 install --no-cache-dir -r requirements.txt -r requirements-tui.txt
+--> Using cache 90d3662c092d18d39d44e20bed3ae4eb5488acd052097614b16c0083238cba1f
+--> 90d3662c092d
+[2/2] STEP 8/22: COPY src ./src
+--> f1fee17a8628
+[2/2] STEP 9/22: COPY configs ./configs
+--> 2d4e7710d7a3
+[2/2] STEP 10/22: COPY pcileech.py .
+--> 8ed70ba2b0e4
+[2/2] STEP 11/22: COPY pyproject.toml setup.py setup.cfg ./
+--> 73c4b9ff2820
+[2/2] STEP 12/22: RUN pip3 install --no-cache-dir .
+Processing /app
+Installing build dependencies: started
+Installing build dependencies: finished with status 'done'
+Getting requirements to build wheel: started
+Getting requirements to build wheel: finished with status 'error'
+error: subprocess-exited-with-error
+× Getting requirements to build wheel did not run successfully.
+│ exit code: 1
+╰─> [58 lines of output]
+/tmp/pip-build-env-_dmpkcz8/overlay/local/lib/python3.10/dist-packages/setuptools_scm/_integration/setuptools.py:24: RuntimeWarning:
+ERROR: setuptools==59.6.0 is used in combination with setuptools-scm>=8.x
+Your build configuration is incomplete and previously worked by accident!
+setuptools-scm requires setuptools>=61 (recommended: >=80)
+Suggested workaround if applicable:
+- migrating from the deprecated setup_requires mechanism to pep517/518
+and using a pyproject.toml to declare build dependencies
+which are reliably pre-installed before running the build tools
+warnings.warn(
+An error occurred while building the project, please ensure you have the most updated version of setuptools, setuptools_scm and wheel with:
+pip install -U setuptools setuptools_scm wheel
+Traceback (most recent call last):
+File "/usr/lib/python3/dist-packages/pip/_vendor/pep517/in_process/_in_process.py", line 363, in <module>
+main()
+File "/usr/lib/python3/dist-packages/pip/_vendor/pep517/in_process/_in_process.py", line 345, in main
+json_out['return_val'] = hook(**hook_input['kwargs'])
+File "/usr/lib/python3/dist-packages/pip/_vendor/pep517/in_process/_in_process.py", line 130, in get_requires_for_build_wheel
+return hook(config_settings)
+File "/usr/lib/python3/dist-packages/setuptools/build_meta.py", line 162, in get_requires_for_build_wheel
+return self._get_build_requires(
+File "/usr/lib/python3/dist-packages/setuptools/build_meta.py", line 143, in _get_build_requires
+self.run_setup()
+File "/usr/lib/python3/dist-packages/setuptools/build_meta.py", line 158, in run_setup
+exec(compile(code, __file__, 'exec'), locals())
+File "setup.py", line 14, in <module>
+setup()
+File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 153, in setup
+return distutils.core.setup(**attrs)
+File "/usr/lib/python3/dist-packages/setuptools/_distutils/core.py", line 109, in setup
+_setup_distribution = dist = klass(attrs)
+File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 459, in __init__
+_Distribution.__init__(
+File "/usr/lib/python3/dist-packages/setuptools/_distutils/dist.py", line 293, in __init__
+self.finalize_options()
+File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 837, in finalize_options
+ep(self)
+File "/tmp/pip-build-env-_dmpkcz8/overlay/local/lib/python3.10/dist-packages/setuptools_scm/_integration/setuptools.py", line 159, in infer_version
+result.apply(dist)
+File "/tmp/pip-build-env-_dmpkcz8/overlay/local/lib/python3.10/dist-packages/setuptools_scm/_integration/version_inference.py", line 28, in apply
+version_string = infer_version_string(
+File "/tmp/pip-build-env-_dmpkcz8/overlay/local/lib/python3.10/dist-packages/setuptools_scm/_integration/version_inference.py", line 102, in infer_version_string
+_version_missing(config)
+File "/tmp/pip-build-env-_dmpkcz8/overlay/local/lib/python3.10/dist-packages/setuptools_scm/_get_version_impl.py", line 188, in _version_missing
+raise LookupError(error_msg)
+LookupError: setuptools-scm was unable to detect version for /app.
+Make sure you're either building from a fully intact git repository or PyPI tarballs. Most other sources (such as GitHub's tarballs, a git checkout without the .git folder) don't contain the necessary metadata and will not work.
+For example, if you're using pip, instead of https://github.com/user/proj/archive/master.zip use git+https://github.com/user/proj.git#egg=proj
+Alternatively, set the version with the environment variable SETUPTOOLS_SCM_PRETEND_VERSION_FOR_${NORMALIZED_DIST_NAME} as described in https://setuptools-scm.readthedocs.io/en/latest/config/
+[end of output]
+note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+× Getting requirements to build wheel did not run successfully.
+│ exit code: 1
+╰─> See above for output.
+note: This error originates from a subprocess, and is likely not a problem with pip.
+Error: building at STEP "RUN pip3 install --no-cache-dir .": while running runtime: exit status 1
+Build failed with exit code 1
