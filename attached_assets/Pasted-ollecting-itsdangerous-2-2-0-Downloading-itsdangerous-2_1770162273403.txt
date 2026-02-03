@@ -1,0 +1,35 @@
+ollecting itsdangerous>=2.2.0
+Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Collecting click>=8.1.3
+Downloading click-8.3.1-py3-none-any.whl (108 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 108.3/108.3 KB 96.4 MB/s eta 0:00:00
+Collecting markdown-it-py[linkify]>=2.1.0
+Downloading markdown_it_py-4.0.0-py3-none-any.whl (87 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 87.3/87.3 KB 50.0 MB/s eta 0:00:00
+Collecting platformdirs<5,>=3.6.0
+Downloading platformdirs-4.5.1-py3-none-any.whl (18 kB)
+Collecting mdit-py-plugins
+Downloading mdit_py_plugins-0.5.0-py3-none-any.whl (57 kB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 57.2/57.2 KB 168.5 MB/s eta 0:00:00
+Collecting pygments<3.0.0,>=2.19.2
+Downloading pygments-2.19.2-py3-none-any.whl (1.2 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 46.5 MB/s eta 0:00:00
+Collecting mdurl~=0.1
+Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Collecting linkify-it-py<3,>=1
+Downloading linkify_it_py-2.0.3-py3-none-any.whl (19 kB)
+Collecting uc-micro-py
+Downloading uc_micro_py-1.0.3-py3-none-any.whl (6.2 kB)
+Installing collected packages: watchdog, uc-micro-py, typing_extensions, PyYAML, pygments, psutil, platformdirs, mdurl, MarkupSafe, itsdangerous, colorlog, click, blinker, annotated-types, aiofiles, werkzeug, typing-inspection, pydantic-core, markdown-it-py, linkify-it-py, jinja2, rich, pydantic, mdit-py-plugins, flask, textual
+Successfully installed MarkupSafe-3.0.3 PyYAML-6.0.3 aiofiles-25.1.0 annotated-types-0.7.0 blinker-1.9.0 click-8.3.1 colorlog-6.10.1 flask-3.1.2 itsdangerous-2.2.0 jinja2-3.1.6 linkify-it-py-2.0.3 markdown-it-py-4.0.0 mdit-py-plugins-0.5.0 mdurl-0.1.2 platformdirs-4.5.1 psutil-7.2.2 pydantic-2.12.5 pydantic-core-2.41.5 pygments-2.19.2 rich-14.3.2 textual-7.5.0 typing-inspection-0.4.2 typing_extensions-4.15.0 uc-micro-py-1.0.3 watchdog-6.0.0 werkzeug-3.1.5
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+--> 90d3662c092d
+[2/2] STEP 8/22: COPY src ./src
+--> 2b3d970b752c
+[2/2] STEP 9/22: COPY configs ./configs
+--> 4499448e06bf
+[2/2] STEP 10/22: COPY pcileech.py .
+--> 012dcf67433d
+[2/2] STEP 11/22: COPY pyproject.toml setup.py setup.cfg ./
+Error: building at STEP "COPY pyproject.toml setup.py setup.cfg ./": no items matching glob "/home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pyproject.toml" copied (1 filtered out using /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/.dockerignore): no such file or directory
+Build failed with exit code 1

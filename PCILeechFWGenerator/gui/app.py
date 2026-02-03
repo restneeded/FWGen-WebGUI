@@ -6,6 +6,7 @@ A clean, simple web interface for donor device cloning.
 """
 
 import json
+import logging
 import os
 import re
 import shutil
@@ -14,6 +15,7 @@ import sys
 import threading
 import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -24,6 +26,32 @@ app.secret_key = os.urandom(24)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 CONFIG_FILE = PROJECT_ROOT / "gui" / "config.json"
+ERROR_LOG_FILE = PROJECT_ROOT / "gui" / "error.log"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)-7s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+file_handler = logging.FileHandler(ERROR_LOG_FILE)
+file_handler.setLevel(logging.WARNING)
+file_handler.setFormatter(logging.Formatter('%(asctime)s | %(levelname)-7s | %(message)s'))
+logger.addHandler(file_handler)
+
+
+def log_error(message: str, exception: Exception = None):
+    """Log error to file and console."""
+    if exception:
+        logger.error(f"{message}: {exception}")
+    else:
+        logger.error(message)
+
+
+def log_warning(message: str):
+    """Log warning to file and console."""
+    logger.warning(message)
 
 BUILD_STATUS: Dict[str, Any] = {
     "running": False,
@@ -221,6 +249,7 @@ def run_build(bdf: str, board: str, output_dir: str):
         
         if errors:
             BUILD_STATUS["error"] = f"VFIO+MMIO requirements not met: {'; '.join(errors)}"
+            log_error(f"Build failed for {bdf}: {BUILD_STATUS['error']}")
             update_status("Failed", 0, BUILD_STATUS["error"])
             BUILD_STATUS["running"] = False
             return
@@ -285,10 +314,15 @@ def run_build(bdf: str, board: str, output_dir: str):
             update_status("Complete", 100, "Build completed successfully!")
         else:
             BUILD_STATUS["error"] = f"Build failed with exit code {process.returncode}"
+            log_error(f"Build failed for {bdf} on {board}: exit code {process.returncode}")
+            for log_line in BUILD_STATUS["log"][-20:]:
+                if "error" in log_line.lower() or "fail" in log_line.lower():
+                    log_error(f"  {log_line}")
             update_status("Failed", 0, BUILD_STATUS["error"])
     
     except Exception as e:
         BUILD_STATUS["error"] = str(e)
+        log_error(f"Build exception for {bdf} on {board}", e)
         update_status("Failed", 0, f"Error: {e}")
     
     finally:
@@ -417,6 +451,30 @@ def api_save_settings():
     
     save_config(config)
     return jsonify({"status": "saved"})
+
+
+@app.route("/api/error-log")
+def api_error_log():
+    """Get error log contents."""
+    if ERROR_LOG_FILE.exists():
+        try:
+            with open(ERROR_LOG_FILE, 'r') as f:
+                lines = f.readlines()[-100:]
+            return jsonify({"log": "".join(lines)})
+        except Exception as e:
+            return jsonify({"log": f"Error reading log: {e}"})
+    return jsonify({"log": ""})
+
+
+@app.route("/api/error-log/clear", methods=["POST"])
+def api_clear_error_log():
+    """Clear the error log."""
+    try:
+        with open(ERROR_LOG_FILE, 'w') as f:
+            f.write("")
+        return jsonify({"status": "cleared"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
