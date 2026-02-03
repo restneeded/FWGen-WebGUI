@@ -123,24 +123,37 @@ def get_pci_devices() -> List[Dict[str, str]]:
     return devices
 
 
-def get_available_boards() -> List[Dict[str, str]]:
-    """Get list of supported boards."""
-    return [
-        {"id": "pcileech_enigma_x1", "name": "Enigma X1", "description": "LambdaConcept Enigma X1"},
-        {"id": "pcileech_squirrel", "name": "Squirrel", "description": "LambdaConcept Squirrel"},
-        {"id": "pcileech_screamer", "name": "Screamer", "description": "LambdaConcept Screamer"},
-        {"id": "pcileech_35t325_x1", "name": "35T325 X1", "description": "Artix-7 35T/325T Board"},
-        {"id": "pcileech_75t484", "name": "75T484", "description": "Artix-7 75T Board"},
-    ]
-
-
 BOARD_DIRS = {
-    "pcileech_enigma_x1": "EnigmaX1",
-    "pcileech_squirrel": "Squirrel",
-    "pcileech_screamer": "Screamer",
-    "pcileech_35t325_x1": "35T325",
-    "pcileech_75t484": "75T484",
+    "enigma_x1": "EnigmaX1",
+    "pcie_squirrel": "PCIeSquirrel",
+    "pcie_screamer": "pciescreamer",
+    "screamer_m2": "ScreamerM2",
+    "ac701_ft601": "ac701_ft601",
+    "acorn_ft2232h": "acorn_ft2232h",
+    "captain_dma": "CaptainDMA",
+    "gbox": "GBOX",
+    "netv2": "NeTV2",
+    "sp605_ft601": "sp605_ft601",
+    "zdma": "ZDMA",
 }
+
+
+def get_available_boards() -> List[Dict[str, str]]:
+    """Get list of supported boards from lib folder."""
+    boards = [
+        {"id": "enigma_x1", "name": "Enigma X1", "description": "LambdaConcept Enigma X1"},
+        {"id": "pcie_squirrel", "name": "PCIe Squirrel", "description": "LambdaConcept PCIe Squirrel"},
+        {"id": "pcie_screamer", "name": "PCIe Screamer", "description": "LambdaConcept PCIe Screamer"},
+        {"id": "screamer_m2", "name": "Screamer M2", "description": "LambdaConcept Screamer M.2"},
+        {"id": "ac701_ft601", "name": "AC701", "description": "Xilinx AC701 with FT601"},
+        {"id": "acorn_ft2232h", "name": "Acorn", "description": "SQRL Acorn with FT2232H"},
+        {"id": "captain_dma", "name": "CaptainDMA", "description": "CaptainDMA Board"},
+        {"id": "gbox", "name": "GBOX", "description": "GBOX Board"},
+        {"id": "netv2", "name": "NeTV2", "description": "Kosagi NeTV2"},
+        {"id": "sp605_ft601", "name": "SP605", "description": "Xilinx SP605 with FT601"},
+        {"id": "zdma", "name": "ZDMA", "description": "ZDMA Board"},
+    ]
+    return boards
 
 
 def run_build(bdf: str, board: str, output_dir: str):
