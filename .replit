@@ -16,15 +16,20 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "CLI Help Check"
+args = "PCILeech GUI"
 
 [[workflows.workflow]]
-name = "CLI Help Check"
+name = "PCILeech GUI"
 author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd PCILeechFWGenerator && python3 pcileech.py --help"
+args = "cd PCILeechFWGenerator && python3 gui/app.py"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

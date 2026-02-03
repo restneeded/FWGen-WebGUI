@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCILeech Firmware Generator</title>
+    <style>
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --border: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #888;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.ok { background: var(--success); }
+        .status-dot.warn { background: var(--warning); }
+        .status-dot.error { background: var(--error); }
+        .status-dot.loading { 
+            background: var(--accent);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status-label {
+            font-size: 0.85rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .progress-container {
+            display: none;
+        }
+        
+        .progress-container.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            margin-top: 1rem;
+        }
+        
+        .log-line {
+            color: var(--text-secondary);
+        }
+        
+        .result-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .result-success h3 {
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .result-error h3 {
+            color: var(--error);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .refresh-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .device-info {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .warning-banner {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+        
+        .warning-banner.visible {
+            display: block;
+        }
+        
+        .warning-banner strong {
+            color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PCILeech Firmware Generator</h1>
+            <p class="subtitle">Clone donor PCIe devices to FPGA firmware</p>
+        </header>
+        
+        <div class="card">
+            <div class="card-title">
+                System Status
+                <button class="refresh-btn" onclick="refreshStatus()">Refresh</button>
+            </div>
+            <div class="status-grid" id="status-grid">
+                <div class="status-item">
+                    <div class="status-dot loading" id="status-podman"></div>
+                    <span class="status-label">Container</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot loading" id="status-iommu"></div>
+                    <span class="status-label">IOMMU</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot loading" id="status-vfio"></div>
+                    <span class="status-label">VFIO</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot loading" id="status-root"></div>
+                    <span class="status-label">Root Access</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">Clone Configuration</div>
+            
+            <div class="warning-banner" id="requirements-warning">
+                <strong>VFIO/MMIO Requirements Not Met</strong><br>
+                <span id="requirements-list"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="device-select">Donor Device</label>
+                <select id="device-select">
+                    <option value="">Loading devices...</option>
+                </select>
+                <div class="device-info" id="device-info"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="board-select">Target Board</label>
+                <select id="board-select">
+                    <option value="">Loading boards...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="output-dir">Output Directory</label>
+                <input type="text" id="output-dir" value="./output" placeholder="./output">
+            </div>
+            
+            <button class="btn" id="build-btn" onclick="startBuild()">
+                Clone Device
+            </button>
+        </div>
+        
+        <div class="card progress-container" id="progress-card">
+            <div class="card-title">Build Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progress-stage">Starting...</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="log-container" id="log-container"></div>
+            
+            <div id="result-container"></div>
+        </div>
+    </div>
+    
+    <script>
+        let devices = [];
+        let statusPollInterval = null;
+        let hasContainerRuntime = false;
+        
+        async function refreshStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const status = await res.json();
+                
+                hasContainerRuntime = !!status.container_runtime;
+                
+                setStatusDot('status-podman', status.container_runtime ? 'ok' : 'error');
+                setStatusDot('status-iommu', status.iommu ? 'ok' : 'error');
+                setStatusDot('status-vfio', status.vfio ? 'ok' : 'error');
+                
+                const warning = document.getElementById('requirements-warning');
+                const reqList = document.getElementById('requirements-list');
+                const btn = document.getElementById('build-btn');
+                
+                let issues = [];
+                if (!status.container_runtime) issues.push('Install podman or docker');
+                if (!status.iommu) issues.push('Enable IOMMU in BIOS');
+                if (!status.vfio) issues.push('Load VFIO driver (modprobe vfio-pci)');
+                if (!status.root) issues.push('Run with sudo/root access');
+                
+                if (issues.length > 0) {
+                    reqList.innerHTML = issues.join('<br>');
+                    warning.classList.add('visible');
+                    btn.disabled = true;
+                    btn.textContent = 'Requirements Not Met';
+                } else {
+                    warning.classList.remove('visible');
+                    btn.disabled = false;
+                    btn.textContent = 'Clone Device';
+                }
+                setStatusDot('status-root', status.root ? 'ok' : 'error');
+            } catch (e) {
+                console.error('Status error:', e);
+            }
+        }
+        
+        function setStatusDot(id, status) {
+            const dot = document.getElementById(id);
+            dot.className = 'status-dot ' + status;
+        }
+        
+        async function loadDevices() {
+            try {
+                const res = await fetch('/api/devices');
+                devices = await res.json();
+                
+                const select = document.getElementById('device-select');
+                select.innerHTML = '<option value="">Select a device...</option>';
+                
+                devices.forEach(dev => {
+                    const opt = document.createElement('option');
+                    opt.value = dev.bdf;
+                    opt.textContent = dev.display;
+                    select.appendChild(opt);
+                });
+                
+                select.onchange = function() {
+                    const dev = devices.find(d => d.bdf === this.value);
+                    const info = document.getElementById('device-info');
+                    if (dev) {
+                        info.textContent = `${dev.class} [${dev.vendor_id}:${dev.device_id}]`;
+                    } else {
+                        info.textContent = '';
+                    }
+                };
+            } catch (e) {
+                console.error('Devices error:', e);
+            }
+        }
+        
+        async function loadBoards() {
+            try {
+                const res = await fetch('/api/boards');
+                const boards = await res.json();
+                
+                const select = document.getElementById('board-select');
+                select.innerHTML = '';
+                
+                boards.forEach(board => {
+                    const opt = document.createElement('option');
+                    opt.value = board.id;
+                    opt.textContent = board.name + ' - ' + board.description;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('Boards error:', e);
+            }
+        }
+        
+        async function startBuild() {
+            const bdf = document.getElementById('device-select').value;
+            const board = document.getElementById('board-select').value;
+            const outputDir = document.getElementById('output-dir').value;
+            
+            if (!bdf) {
+                alert('Please select a device');
+                return;
+            }
+            
+            document.getElementById('build-btn').disabled = true;
+            document.getElementById('progress-card').classList.add('active');
+            document.getElementById('result-container').innerHTML = '';
+            document.getElementById('log-container').innerHTML = '';
+            
+            try {
+                const res = await fetch('/api/build', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({bdf, board, output_dir: outputDir})
+                });
+                
+                if (res.ok) {
+                    startStatusPolling();
+                } else {
+                    const err = await res.json();
+                    showError(err.error || 'Build failed to start');
+                }
+            } catch (e) {
+                showError('Failed to start build: ' + e.message);
+            }
+        }
+        
+        function startStatusPolling() {
+            if (statusPollInterval) clearInterval(statusPollInterval);
+            
+            statusPollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch('/api/build/status');
+                    const status = await res.json();
+                    
+                    document.getElementById('progress-fill').style.width = status.progress + '%';
+                    document.getElementById('progress-stage').textContent = status.stage;
+                    document.getElementById('progress-percent').textContent = status.progress + '%';
+                    
+                    const logContainer = document.getElementById('log-container');
+                    logContainer.innerHTML = status.log.map(l => 
+                        `<div class="log-line">${escapeHtml(l)}</div>`
+                    ).join('');
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                    
+                    if (!status.running) {
+                        clearInterval(statusPollInterval);
+                        document.getElementById('build-btn').disabled = false;
+                        
+                        if (status.error) {
+                            showError(status.error);
+                        } else if (status.output_file) {
+                            showSuccess(status.output_file);
+                        } else if (status.progress === 100) {
+                            showSuccess('Build complete');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Poll error:', e);
+                }
+            }, 1000);
+        }
+        
+        function showSuccess(file) {
+            document.getElementById('result-container').innerHTML = `
+                <div class="result-success">
+                    <h3>Build Complete!</h3>
+                    <p>Firmware generated successfully</p>
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                        Output: ${escapeHtml(file)}
+                    </p>
+                </div>
+            `;
+        }
+        
+        function showError(msg) {
+            document.getElementById('result-container').innerHTML = `
+                <div class="result-error">
+                    <h3>Build Failed</h3>
+                    <p>${escapeHtml(msg)}</p>
+                </div>
+            `;
+            document.getElementById('build-btn').disabled = false;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+        
+        refreshStatus();
+        loadDevices();
+        loadBoards();
+    </script>
+</body>
+</html>
