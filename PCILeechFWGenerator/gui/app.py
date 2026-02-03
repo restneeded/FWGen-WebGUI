@@ -237,8 +237,7 @@ def run_build(bdf: str, board: str, output_dir: str):
             "--bdf", bdf,
             "--board", board,
             "--build-dir", output_dir,
-            container_flag,
-            "--verbose"
+            container_flag
         ]
         
         process = subprocess.Popen(
