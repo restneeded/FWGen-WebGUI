@@ -1,0 +1,74 @@
+# Include documentation and configuration files
+include README.md
+include LICENSE.txt
+include CHANGELOG.rst
+include CONTRIBUTING.rst
+include AUTHORS.rst
+include pyproject.toml
+include setup.py
+include setup.cfg
+
+# Include requirements files
+include requirements*.txt
+include pytest.ini
+include .coveragerc
+include mypy_dev.ini
+include tox.ini
+
+# Include CI/CD and development configuration
+include .pre-commit-config.yaml
+include .readthedocs.yml
+
+# Include installation and build scripts
+include install-sudo-wrapper.sh
+include build_vfio_constants.sh
+include force_vfio_binds.sh
+include patch_vfio_constants.py
+include get_version.py
+include run_tests.sh
+include vfio_helper.c
+include Containerfile
+include .dockerignore
+include entrypoint.sh
+
+# Include TUI styles
+recursive-include src/tui/styles *.tcss
+
+# Include donor dump C code and Makefile
+recursive-include src/donor_dump *.c *.h Makefile*
+
+# Include templates
+recursive-include src/templates *.j2 *.md
+
+# Include scripts
+recursive-include src/scripts *.py
+
+# Include config files
+recursive-include configs *.yaml
+
+# Include PCILeech RTL and simulation files
+recursive-include pcileech *.sv *.svh
+
+# Include voltcyclone-fpga submodule contents
+recursive-include lib/voltcyclone-fpga *.xdc *.sv *.svh *.tcl *.py *.md *.txt *.v *.vh *.xci *.xco *.ucf *.coe *.yml
+
+# Exclude build artifacts and cache
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .pytest_cache
+global-exclude *.egg-info
+global-exclude .git/
+global-exclude .DS_Store
+global-exclude *.log
+global-exclude logs/**
+global-exclude output/**
+global-exclude build/**
+global-exclude dist/**
+global-exclude .mypy_cache
+global-exclude .coverage
+global-exclude htmlcov
+global-exclude .venv/**
+global-exclude .benchmarks/**
+global-exclude site/**

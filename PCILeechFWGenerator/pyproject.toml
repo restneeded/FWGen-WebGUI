@@ -1,0 +1,100 @@
+[build-system]
+# AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
+requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PCILeechFWGenerator"
+description = "Generate spoofed PCIe DMA firmware from real donor hardware"
+authors = [
+    {name = "Ramsey McGrath", email = "ramsey@voltcyclone.info"}
+]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: System :: Hardware",
+]
+dependencies = [
+    "psutil>=5.9.0",
+    "pydantic>=2.0.0",
+    "aiofiles>=23.0.0",
+    "jinja2>=3.1.0",
+    "PyYAML>=6.0.0",
+    "colorlog>=6.7.0",
+    "typing_extensions>=4.0.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://pcileechfwgenerator.voltcyclone.info"
+Source = "https://github.com/voltcyclone/PCILeechFWGenerator"
+"Bug Tracker" = "https://github.com/voltcyclone/PCILeechFWGenerator/issues"
+
+[project.optional-dependencies]
+tui = [
+    "textual>=4.0.0",
+    "rich>=13.0.0",
+    "watchdog>=3.0.0",
+]
+testing = [
+    "setuptools",
+    "pytest",
+    "pytest-cov",
+]
+
+[project.scripts]
+pcileech = "pcileechfwgenerator.pcileech_main:main"
+pcileech-generate = "pcileechfwgenerator.pcileech_main:main"
+pcileech-build = "pcileechfwgenerator.pcileech_main:main"
+pcileech-tui = "pcileechfwgenerator.pcileech_main:main"
+
+[tool.setuptools_scm]
+# For smarter version schemes and other configuration options,
+# check out https://github.com/pypa/setuptools_scm
+version_scheme = "no-guess-dev"
+
+[tool.setuptools]
+package-dir = {"pcileechfwgenerator" = "src"}
+packages = [
+    "pcileechfwgenerator",
+    "pcileechfwgenerator.behavioral",
+    "pcileechfwgenerator.cli",
+    "pcileechfwgenerator.device_clone",
+    "pcileechfwgenerator.file_management",
+    "pcileechfwgenerator.host_collect",
+    "pcileechfwgenerator.pci_capability",
+    "pcileechfwgenerator.scripts",
+    "pcileechfwgenerator.templating",
+    "pcileechfwgenerator.tui",
+    "pcileechfwgenerator.tui.commands",
+    "pcileechfwgenerator.tui.core",
+    "pcileechfwgenerator.tui.models",
+    "pcileechfwgenerator.tui.plugins",
+    "pcileechfwgenerator.tui.plugins.examples",
+    "pcileechfwgenerator.tui.utils",
+    "pcileechfwgenerator.tui.widgets",
+    "pcileechfwgenerator.utils",
+    "pcileechfwgenerator.vivado_handling",
+]
+
+[tool.pylint.messages_control]
+# Disable the line-too-long check
+# Disable the unused-import check
+disable = [
+    "line-too-long",
+    "unused-import",
+    "missing-module-docstring",
+    "missing-function-docstring",
+]
+
+[tool.pylint.format]
+max-line-length = 120

@@ -1,0 +1,25 @@
+# Core dependencies for PCILeech Firmware Generator
+# Install with: pip install -r requirements.txt
+
+# System resource monitoring
+psutil>=5.9.0
+
+# Configuration validation and serialization
+pydantic>=2.0.0
+
+# Async file I/O for modular build system
+aiofiles>=23.0.0
+
+# Template rendering for TCL generation
+jinja2>=3.1.0
+
+# YAML configuration parsing
+PyYAML>=6.0.0
+
+
+
+# Colored logging output
+colorlog>=6.7.0
+
+# Type extensions for Python < 3.11 compatibility
+typing_extensions>=4.0.0

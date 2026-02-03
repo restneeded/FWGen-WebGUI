@@ -1,0 +1,70 @@
+# Temporary and binary files
+*~
+*.py[cod]
+*.so
+*.cfg
+!.isort.cfg
+!setup.cfg
+*.orig
+*.log
+*.pot
+__pycache__/*
+.cache/*
+.*.swp
+*/.ipynb_checkpoints/*
+.DS_Store
+
+# Project files
+.ropeproject
+.project
+.pydevproject
+.settings
+.idea
+.vscode
+tags
+
+# Package files
+*.egg
+*.eggs/
+.installed.cfg
+*.egg-info
+
+# Unittest and coverage
+htmlcov/*
+.coverage
+.coverage.*
+.tox
+junit*.xml
+coverage.xml
+.pytest_cache/
+.benchmarks/
+
+# Build and docs folder/files
+build/*
+dist/*
+sdist/*
+docs/api/*
+docs/_rst/*
+docs/_build/*
+cover/*
+MANIFEST
+
+# Per-project virtualenvs
+.venv*/
+.conda*/
+.python-version
+tests/mock_sysfs/*
+
+# Cloudflare Worker
+site/worker/node_modules/
+site/worker/.wrangler/
+site/worker/package-lock.json
+
+# MkDocs
+site/site/
+
+.github/copilot-instructions.md
+template_variables_report.json
+src/file_management/donor_info.json
+message.txt
+BUILD_LOG_ANALYSIS.md

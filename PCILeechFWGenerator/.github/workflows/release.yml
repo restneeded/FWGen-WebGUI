@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        submodules: recursive
+    
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build setuptools setuptools_scm wheel twine
+    
+    - name: Build packages
+      run: |
+        python -m build
+    
+    - name: Verify packages
+      run: |
+        twine check dist/*
+    
+    - name: Attest build provenance
+      uses: actions/attest-build-provenance@v3
+      with:
+        subject-path: "dist/*"
+    
+    - name: Get version and changelog
+      id: version
+      run: |
+        VERSION=$(python -c "import setuptools_scm; print(setuptools_scm.get_version())")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # Extract changelog for this version
+        if [ -f "CHANGELOG.rst" ]; then
+          # Extract section between current version and next version/end
+          CHANGELOG=$(awk "/^$VERSION/,/^[0-9]/ {if (/^[0-9]/ && !/^$VERSION/) exit; print}" CHANGELOG.rst | head -n -1)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        else
+          echo "changelog=Release $VERSION" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Create GitHub prerelease (rc/beta/alpha)
+      if: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: v${{ steps.version.outputs.version }}
+        body: ${{ steps.version.outputs.changelog }}
+        files: |
+          dist/*.tar.gz
+          dist/*.whl
+        draft: false
+        prerelease: true
+    
+    - name: Publish pre-release to TestPyPI (rc/beta/alpha)
+      if: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: dist
+        repository-url: https://test.pypi.org/legacy/
+        skip-existing: true
+
+    - name: Publish to PyPI
+      if: ${{ !contains(github.ref_name, 'rc') && !contains(github.ref_name, 'beta') && !contains(github.ref_name, 'alpha') }}
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: dist
+        skip-existing: true
