@@ -1340,11 +1340,15 @@ class FirmwareBuilder:
                 
                 template_dir = Path(__file__).parent / "templates"
                 renderer = TemplateRenderer(template_dir=template_dir)
-                overlay_gen = SVOverlayGenerator(renderer=renderer)
+                overlay_gen = SVOverlayGenerator(
+                    renderer=renderer,
+                    logger=self.logger,
+                    prefix="HOST_CFG"
+                )
                 
                 try:
                     # Generate overlays (.coe files) using host context
-                    sv_modules = overlay_gen.generate_overlays(host_context)
+                    sv_modules = overlay_gen.generate_config_space_overlay(host_context)
                     self.build_logger.info(
                         safe_format(
                             "Generated {count} overlay files from host context: {files}",
@@ -1360,6 +1364,12 @@ class FirmwareBuilder:
                             "Failed to generate overlays from host context: {err}",
                             err=str(e),
                         ),
+                        prefix="HOST_CFG"
+                    )
+                    import traceback
+                    log_error_safe(
+                        self.logger,
+                        safe_format("Traceback: {tb}", tb=traceback.format_exc()),
                         prefix="HOST_CFG"
                     )
                     sv_modules = {}
