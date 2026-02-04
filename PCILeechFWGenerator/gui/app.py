@@ -284,13 +284,15 @@ def run_build(bdf: str, board: str, output_dir: str):
         
         progress = 20
         global CONSOLE_ERROR_LOG
+        false_positives = ['liberror', 'error-perl', 'errorformat', 'error.h']
         for line in iter(process.stdout.readline, ""):
             line = line.strip()
             if line:
                 update_status("Building", min(progress, 90), line)
                 
                 line_lower = line.lower()
-                is_error = 'error' in line_lower or 'fail' in line_lower
+                is_error = ('error' in line_lower or 'fail' in line_lower) and \
+                           not any(fp in line_lower for fp in false_positives)
                 
                 if is_error:
                     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

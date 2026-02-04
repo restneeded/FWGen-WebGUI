@@ -1,0 +1,19 @@
+2026-02-03 19:05:21 | 19:05:21 │ WARNING│ [VFIO] VFIO constants script execution error: [Errno 2] No such file or directory: '/home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/build_vfio_constants.sh'
+2026-02-03 19:05:21 | 19:05:21 │ WARNING│ [VFIO] VFIO constants rebuild failed - may cause ioctl errors
+2026-02-03 19:05:40 | libelf1t64 liberror-perl libexpat1 libgcc-13-dev libgdbm-compat4t64
+2026-02-03 19:05:40 | libelf1t64 liberror-perl libexpat1 libgcc-13-dev libgdbm-compat4t64
+2026-02-03 19:05:48 | Get:96 http://archive.ubuntu.com/ubuntu noble/main amd64 liberror-perl all 0.17029-2 [25.6 kB]
+2026-02-03 19:05:57 | Selecting previously unselected package liberror-perl.
+2026-02-03 19:05:57 | Preparing to unpack .../79-liberror-perl_0.17029-2_all.deb ...
+2026-02-03 19:05:57 | Unpacking liberror-perl (0.17029-2) ...
+2026-02-03 19:06:01 | Setting up liberror-perl (0.17029-2) ...
+2026-02-03 19:07:34 | [1/2] STEP 8/8: RUN mkdir -p src/cli &&     chmod +x build_vfio_constants.sh &&     (./build_vfio_constants.sh && cp src/cli/vfio_constants.py vfio_constants_patched.py) ||     (echo "⚠ VFIO constants build failed, using original" && cp src/cli/vfio_constants.py vfio_constants_patched.py) &&     echo "Content of patched file:" && head -20 vfio_constants_patched.py | grep -A 10 "Ioctl numbers" || echo "No ioctl numbers section found"
+2026-02-03 19:07:34 | ⚠ VFIO constants build failed, using original
+2026-02-03 19:07:46 | git-man libapparmor1 libbrotli1 libcurl3t64-gnutls liberror-perl libexpat1
+2026-02-03 19:07:47 | libcurl3t64-gnutls liberror-perl libexpat1 libgdbm-compat4t64 libgdbm6t64
+2026-02-03 19:07:47 | Get:46 http://archive.ubuntu.com/ubuntu noble/main amd64 liberror-perl all 0.17029-2 [25.6 kB]
+2026-02-03 19:07:49 | Selecting previously unselected package liberror-perl.
+2026-02-03 19:07:49 | Preparing to unpack .../31-liberror-perl_0.17029-2_all.deb ...
+2026-02-03 19:07:49 | Unpacking liberror-perl (0.17029-2) ...
+2026-02-03 19:07:51 | Setting up liberror-perl (0.17029-2) ...
+2026-02-03 19:09:52 | {"msg":"exec container process (missing dynamic library?) `/usr/local/bin/entrypoint`: No such file or directory","level":"error","time":"2026-02-04T00:09:51.908714Z"}

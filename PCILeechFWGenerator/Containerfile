@@ -98,4 +98,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "import psutil, pydantic, sys; sys.exit(0)" || exit 1
 
 USER appuser
-ENTRYPOINT ["entrypoint"]
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
