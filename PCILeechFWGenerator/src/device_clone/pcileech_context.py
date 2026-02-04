@@ -1688,6 +1688,16 @@ class PCILeechContextBuilder:
         if not enable_mmio_learning:
             return {}
 
+        # Skip MMIO learning in host-context-only mode (container environment)
+        import os
+        if os.getenv("PCILEECH_HOST_CONTEXT_ONLY") == "1":
+            log_info_safe(
+                self.logger,
+                "Skipping MMIO learning in host-context-only mode",
+                prefix="MMIO",
+            )
+            return {}
+
         # Check for prefilled bar_models from container flow
         import os
         device_context_path = os.getenv("DEVICE_CONTEXT_PATH")
