@@ -29,45 +29,6 @@ The container does **NOT** access VFIO devices - it only performs templating usi
 - **Containerized Build Pipeline**: Podman-based synthesis environment with automated VFIO setup
 - **USB-JTAG Flashing**: Direct firmware deployment to DMA boards via integrated flash utilities
 
- **[Complete Documentation](https://pcileechfwgenerator.voltcyclone.info)** |  **[Host-Container Pipeline](https://pcileechfwgenerator.voltcyclone.info/host-container-pipeline)** |  **[Template Architecture](https://pcileechfwgenerator.voltcyclone.info/template-architecture)** |  **[Troubleshooting Guide](https://pcileechfwgenerator.voltcyclone.info/troubleshooting)** |  **[Device Cloning Guide](https://pcileechfwgenerator.voltcyclone.info/device-cloning)** | **[Dynamic Capabilities](https://pcileechfwgenerator.voltcyclone.info/dynamic-device-capabilities)** |  **[Development Setup](https://pcileechfwgenerator.voltcyclone.info/development)**
-
-## Quick Start
-
-### Installation (Ubuntu 22.04+ / Debian 12+)
-
-Modern Linux requires a virtual environment:
-
-```bash
-# Create and activate virtual environment
-python3 -m venv ~/.pcileech-venv
-source ~/.pcileech-venv/bin/activate
-
-# Install with TUI support
-pip install pcileechfwgenerator[tui]
-
-# Verify installation
-pcileech version
-```
-
-> ⚠️ **Don't skip the venv!** Running `pip install pcileechfwgenerator` directly will fail with `externally-managed-environment` on modern systems.
-
-### Running with Root Access (Required for VFIO)
-
-VFIO requires root. Use the venv's Python directly with sudo:
-
-```bash
-# Add this alias to ~/.bashrc for convenience:
-echo "alias pcileech-sudo='sudo ~/.pcileech-venv/bin/python3 -m pcileechfwgenerator.pcileech_main'" >> ~/.bashrc
-source ~/.bashrc
-
-# Load VFIO modules
-sudo modprobe vfio vfio-pci
-
-# Now run commands with pcileech-sudo:
-pcileech-sudo tui                                                    # Interactive TUI
-pcileech-sudo build --bdf 0000:03:00.0 --board pcileech_35t325_x1   # CLI build
-pcileech-sudo check --device 0000:03:00.0                            # VFIO diagnostics
-```
 
 For complete setup including IOMMU configuration, see the **[Installation Guide](https://pcileechfwgenerator.voltcyclone.info/installation)**.
 
