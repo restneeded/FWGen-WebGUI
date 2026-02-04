@@ -22,7 +22,11 @@ from ..string_utils import log_debug_safe, log_error_safe, log_info_safe, safe_f
 ###############################################################################
 
 # Git submodule path - single source of truth
-_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+# In container mode, use /app as root; otherwise use package location
+if _os.environ.get("PCILEECH_CONTAINER_MODE") == "true":
+    _REPO_ROOT = Path("/app")
+else:
+    _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 REPO_URL = "https://github.com/VoltCyclone/voltcyclone-fpga.git"
 
 
