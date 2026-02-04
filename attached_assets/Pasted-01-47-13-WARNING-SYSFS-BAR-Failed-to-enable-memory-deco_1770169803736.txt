@@ -1,0 +1,36 @@
+01:47:13 │ WARNING│ [SYSFS_BAR] Failed to enable memory decoding: [Errno 30] Read-only file system: '/sys/bus/pci/devices/0000:05:00.0/enable'
+01:47:13 │ ERROR │ BAR read requires root privileges (for mmap)
+01:47:13 │ WARNING│ [SYSFS_BAR] BAR sampling requires root privileges; skipping direct sampling
+01:47:13 │ WARNING│ [MMIO] MMIO learning failed: [Errno 13] Permission denied: '.pcileech_cache'
+01:47:13 │ WARNING│ Device profile '10ec_8161' not found, using live device detection
+01:47:13 │ INFO │ [PCIL] Building board configuration for pcileech_enigma_x1
+01:47:13 │ INFO │ Discovering boards from pcileech-fpga repository...
+01:47:13 │ INFO │ [BOARDS] Discovered 17 boards from submodule
+01:47:13 │ INFO │ Discovered 17 boards
+01:47:13 │ INFO │ [PCIL] Board configuration loaded: xc7a75tfgg484-2
+01:47:13 │ INFO │ [PCIL] Loaded board XDC content for pcileech_enigma_x1 (6606 bytes)
+01:47:13 │ INFO │ [PCI_CAP] Loaded 21 default rules
+01:47:13 │ INFO │ [PCI_CAP] Discovered 10 capabilities
+01:47:13 │ WARNING│ [VFIO] [WARN] ensure_device_vfio_binding called: 0000:05:00.0 already bound to vfio-pci (re-check, not a rebind)
+01:47:13 │ INFO │ [VFIO] VFIO binding recheck passed for 0000:05:00.0 (IOMMU group 19)
+01:47:13 │ INFO │ [PCIL] Context built successfully: 10ec:8161:15
+01:47:13 │ INFO │ [PCIL] Template context built successfully with 54 top-level keys
+01:47:13 │ INFO │ Generating SystemVerilog modules
+01:47:13 │ ERROR │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+01:47:13 │ ERROR │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+01:47:13 │ WARNING│ [TEMPLATING] Device serial number unavailable; generated deterministic DSN: 0x034C7C008E6310EC
+01:47:13 │ INFO │ [SV_GEN] Generating configuration space overlay
+01:47:13 │ ERROR │ [SV_GEN] Failed to render config space template: Failed to render template 'sv/pcileech_cfgspace.coe.j2': 'sv/pcileech_cfgspace.coe.j2' not found in search path: '/usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/templates'
+01:47:13 │ ERROR │ [SV_GEN] Overlay generation failed: Failed to render config space template: Failed to render template 'sv/pcileech_cfgspace.coe.j2': 'sv/pcileech_cfgspace.coe.j2' not found in search path: '/usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/templates'
+01:47:13 │ ERROR │ [SV_GEN] ERROR TYPE: Template Error
+CONTEXT: SystemVerilog generation
+DETAILS: 'sv/pcileech_cfgspace.coe.j2' not found in search path: '/usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/templates'
+SUGGESTION: There's an issue with the template. Check the template syntax and ensure all required variables are provided.
+01:47:13 │ ERROR │ [PCIL] PCILeech firmware generation failed: SystemVerilog generation failed: ERROR TYPE: Template Error
+CONTEXT: SystemVerilog generation
+DETAILS: 'sv/pcileech_cfgspace.coe.j2' not found in search path: '/usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/templates'
+SUGGESTION: There's an issue with the template. Check the template syntax and ensure all required variables are provided.
+01:47:13 │ ERROR │ [BUILD] Build failed: 'sv/pcileech_cfgspace.coe.j2' not found in search path: '/usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/templates'
+01:47:13 │ ERROR │ Build failed: Build failed: 'sv/pcileech_cfgspace.coe.j2' not found in search path: '/usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/templates'
+01:47:13 │ INFO │ [BUILD] Reproduce with: python3 -m pcileechfwgenerator.build --bdf 0000:05:00.0 --board pcileech_enigma_x1 --profile 30
+Build failed with exit code 1
