@@ -349,7 +349,13 @@ class PCILeechBuildIntegration:
         Vivado will treat added .xci files as IP instances; without these the
         subsequent unlock/regenerate logic will find no IP cores and synthesis
         will fail when RTL references generated output products.
+        
+        CRITICAL: After copying template files from the board's IP directory,
+        this method overwrites .coe files with generated versions containing
+        the actual donor device IDs. Without this step, firmware would use
+        default IDs (10EE:0666) instead of the donor's IDs.
         """
+        import re
         output_dir.mkdir(parents=True, exist_ok=True)
         copied: List[Path] = []
         try:
@@ -390,6 +396,84 @@ class PCILeechBuildIntegration:
                     safe_format("No IP definition files (*.xci/*.coe) found for board {board}", board=board_name),
                     prefix=self.prefix,
                 )
+            
+            # CRITICAL FIX: Inject generated .coe files with donor device IDs
+            # The firmware generation step creates device-specific .coe files in output/src/
+            # These contain the actual donor IDs and must overwrite the template files
+            generated_src_dir = self.output_dir / "src"
+            if generated_src_dir.exists():
+                generated_coe_files = list(generated_src_dir.glob("*.coe"))
+                if generated_coe_files:
+                    log_info_safe(
+                        logger,
+                        "Injecting donor device IDs into IP configuration files",
+                        prefix=self.prefix,
+                    )
+                    
+                    for coe_file in generated_coe_files:
+                        dest = output_dir / coe_file.name
+                        try:
+                            shutil.copy2(coe_file, dest)
+                            
+                            # Extract and display device IDs from config space file
+                            if "cfgspace" in coe_file.name and "writemask" not in coe_file.name:
+                                try:
+                                    content = coe_file.read_text()
+                                    # Find first 8-char hex value after vector= line
+                                    match = re.search(
+                                        r'memory_initialization_vector\s*=\s*\n*\s*([0-9a-fA-F]{8})',
+                                        content,
+                                        re.MULTILINE | re.IGNORECASE
+                                    )
+                                    if match:
+                                        hex_value = match.group(1)
+                                        # Config space DWORD 0: [31:16]=device_id, [15:0]=vendor_id
+                                        vendor_id = hex_value[4:8].upper()
+                                        device_id = hex_value[0:4].upper()
+                                        log_info_safe(
+                                            logger,
+                                            safe_format(
+                                                "Donor IDs: Vendor=0x{vendor} Device=0x{device}",
+                                                vendor=vendor_id,
+                                                device=device_id,
+                                            ),
+                                            prefix=self.prefix,
+                                        )
+                                except Exception:
+                                    pass
+                            
+                            log_info_safe(
+                                logger,
+                                safe_format("Injected: {name}", name=coe_file.name),
+                                prefix=self.prefix,
+                            )
+                            
+                            if dest not in copied:
+                                copied.append(dest)
+                                
+                        except Exception as e:
+                            log_warning_safe(
+                                logger,
+                                safe_format(
+                                    "Failed to inject generated COE {file}: {err}",
+                                    file=coe_file.name,
+                                    err=e,
+                                ),
+                                prefix=self.prefix,
+                            )
+                else:
+                    log_warning_safe(
+                        logger,
+                        "No generated .coe files found in output/src/ - firmware will use template IDs!",
+                        prefix=self.prefix,
+                    )
+            else:
+                log_warning_safe(
+                    logger,
+                    "Generated source directory not found - firmware will use template IDs!",
+                    prefix=self.prefix,
+                )
+                
         except Exception as e:
             log_warning_safe(
                 logger,
