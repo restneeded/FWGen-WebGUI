@@ -133,3 +133,4 @@ flash_fpga.py
 !vfio_helper.c
 !patch_vfio_constants.py
 !build_vfio_constants.sh
+!entrypoint.sh
