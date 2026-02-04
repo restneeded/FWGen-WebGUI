@@ -403,16 +403,21 @@ def check_vfio_requirements():
         # /proc/modules not available or inaccessible, skip check
         pass
 
-    # Always rebuild VFIO constants to ensure they match the current kernel
-    log_info_safe(
-        logger, "Rebuilding VFIO constants for current kernel...", prefix="VFIO"
-    )
-    if not rebuild_vfio_constants():
-        log_warning_safe(
-            logger,
-            "VFIO constants rebuild failed - may cause ioctl errors",
-            prefix="VFIO",
-        )
+    # Skip VFIO constants rebuild on host - container builds it internally
+    # The container's entrypoint.sh handles VFIO constants for the container environment
+    # Only rebuild if explicitly running without container mode AND script exists
+    if os.environ.get("PCILEECH_CONTAINER_MODE") == "true":
+        log_info_safe(logger, "Running in container - VFIO constants already built", prefix="VFIO")
+    else:
+        script = project_root / "build_vfio_constants.sh"
+        if script.exists() and os.access(script, os.X_OK):
+            log_info_safe(logger, "Rebuilding VFIO constants for current kernel...", prefix="VFIO")
+            if not rebuild_vfio_constants():
+                log_warning_safe(
+                    logger,
+                    "VFIO constants rebuild failed - will use defaults",
+                    prefix="VFIO",
+                )
 
     return True
 
