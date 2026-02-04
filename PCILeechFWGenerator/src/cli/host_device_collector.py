@@ -15,7 +15,7 @@ from typing import Any, Dict, Optional
 
 
 class DataclassJSONEncoder(json.JSONEncoder):
-    """Custom JSON encoder that handles dataclasses and TemplateObject."""
+    """Custom JSON encoder that handles dataclasses, TemplateObject, and bytes."""
     
     def default(self, obj):
         if is_dataclass(obj) and not isinstance(obj, type):
@@ -23,6 +23,12 @@ class DataclassJSONEncoder(json.JSONEncoder):
         # Handle TemplateObject (hybrid dict/object wrapper)
         if hasattr(obj, "_data") and hasattr(obj, "_converted_attrs"):
             return obj._data
+        # Handle bytes - convert to hex string
+        if isinstance(obj, bytes):
+            return obj.hex()
+        # Handle sets - convert to list
+        if isinstance(obj, set):
+            return list(obj)
         return super().default(obj)
 
 from pcileechfwgenerator.cli.vfio_handler import VFIOBinder
