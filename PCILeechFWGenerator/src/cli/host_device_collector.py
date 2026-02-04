@@ -260,9 +260,18 @@ class HostDeviceCollector:
             Dict mapping BAR index to serialized BarModel, or None on failure
         """
         try:
-            from pcileechfwgenerator.device_clone.bar_model_synthesizer import (
-                synthesize_bar_models,
+            # MMIO learning requires trace capture infrastructure that's not yet complete
+            # For now, skip this step - BAR configuration is still captured from config space
+            log_info_safe(
+                self.logger,
+                "MMIO learning not yet implemented for host collection - using config space BAR data only",
+                prefix="MMIO"
             )
+            return None
+            
+            # TODO: Implement proper MMIO trace capture and model synthesis
+            # from pcileechfwgenerator.device_clone.bar_model_synthesizer import synthesize_model
+            # from pcileechfwgenerator.device_clone.mmio_tracer import capture_mmio_trace
 
             bar_config = device_info.get("bar_config", {})
             bars = bar_config.get("bars", [])
