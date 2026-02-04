@@ -1,0 +1,100 @@
+[93m154. ℹ️ INFO: Generating 'Change Log' target for IP 'fifo_43_43_clk2'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'fifo_43_43_clk2'...
+[93m155. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'fifo_49_49_clk2'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'fifo_49_49_clk2'...
+[93m156. ℹ️ INFO: Generating 'Synthesis' target for IP 'fifo_49_49_clk2'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'fifo_49_49_clk2'...
+[93m157. ℹ️ INFO: Generating 'Simulation' target for IP 'fifo_49_49_clk2'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'fifo_49_49_clk2'...
+[93m158. ℹ️ INFO: Generating 'Change Log' target for IP 'fifo_49_49_clk2'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'fifo_49_49_clk2'...
+[93m159. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'fifo_64_64'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'fifo_64_64'...
+[93m160. ℹ️ INFO: Generating 'Synthesis' target for IP 'fifo_64_64'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'fifo_64_64'...
+[93m161. ℹ️ INFO: Generating 'Simulation' target for IP 'fifo_64_64'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'fifo_64_64'...
+[93m162. ℹ️ INFO: Generating 'Change Log' target for IP 'fifo_64_64'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'fifo_64_64'...
+[93m163. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'fifo_64_64_clk1_fifocmd'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'fifo_64_64_clk1_fifocmd'...
+[93m164. ℹ️ INFO: Generating 'Synthesis' target for IP 'fifo_64_64_clk1_fifocmd'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'fifo_64_64_clk1_fifocmd'...
+[93m165. ℹ️ INFO: Generating 'Simulation' target for IP 'fifo_64_64_clk1_fifocmd'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'fifo_64_64_clk1_fifocmd'...
+[93m166. ℹ️ INFO: Generating 'Change Log' target for IP 'fifo_64_64_clk1_fifocmd'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'fifo_64_64_clk1_fifocmd'...
+[93m167. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'fifo_64_64_clk2_comrx'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'fifo_64_64_clk2_comrx'...
+[93m168. ℹ️ INFO: Generating 'Synthesis' target for IP 'fifo_64_64_clk2_comrx'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'fifo_64_64_clk2_comrx'...
+[93m169. ℹ️ INFO: Generating 'Simulation' target for IP 'fifo_64_64_clk2_comrx'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'fifo_64_64_clk2_comrx'...
+[93m170. ℹ️ INFO: Generating 'Change Log' target for IP 'fifo_64_64_clk2_comrx'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'fifo_64_64_clk2_comrx'...
+[93m171. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'fifo_74_74_clk1_bar_rd1'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'fifo_74_74_clk1_bar_rd1'...
+[93m172. ℹ️ INFO: Generating 'Synthesis' target for IP 'fifo_74_74_clk1_bar_rd1'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'fifo_74_74_clk1_bar_rd1'...
+[93m173. ℹ️ INFO: Generating 'Simulation' target for IP 'fifo_74_74_clk1_bar_rd1'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'fifo_74_74_clk1_bar_rd1'...
+[93m174. ℹ️ INFO: Generating 'Change Log' target for IP 'fifo_74_74_clk1_bar_rd1'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'fifo_74_74_clk1_bar_rd1'...
+[93m175. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'pcie_7x_0'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'pcie_7x_0'...
+[93m176. ℹ️ INFO: Generating 'Synthesis' target for IP 'pcie_7x_0'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'pcie_7x_0'...
+[93m177. ℹ️ INFO: Generating 'Simulation' target for IP 'pcie_7x_0'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'pcie_7x_0'...
+[93m178. ℹ️ INFO: Generating 'Change Log' target for IP 'pcie_7x_0'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'pcie_7x_0'...
+[93m179. ⚠️ WARNING: No IPs found[0m
+🏷️ Type: Unknown
+📝 Raw: WARNING: [Coretcl 2-176] No IPs found
+[93m180. ℹ️ INFO: Generating 'Instantiation Template' target for IP 'bram_pcie_cfgspace'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'bram_pcie_cfgspace'...
+[93m181. ℹ️ INFO: Generating 'Synthesis' target for IP 'bram_pcie_cfgspace'...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'bram_pcie_cfgspace'...
+[93m182. ℹ️ INFO: Exiting Vivado at Tue Feb 3 23:13:12 2026...[0m
+🏷️ Type: Unknown
+📝 Raw: INFO: [Common 17-206] Exiting Vivado at Tue Feb 3 23:13:12 2026...
+[1mERROR TYPE BREAKDOWN:[0m
+----------------------------------------
+Ip: [91m12 errors[0m, [93m2 warnings[0m
+Unknown: [91m4 errors[0m, [93m180 warnings[0m
+[1mRECOMMENDATIONS:[0m
+----------------------------------------
+For [1mIp[0m issues:
+• Regenerate PCIe IP core for your Vivado version and target board
+• Check PCIe IP core configuration (lanes, speed, device/endpoint mode)
+• Verify PCIe IP core licensing for your FPGA family
+• Ensure PCIe IP core version matches your board's capabilities
+================================================================================
+Build failed with exit code 1
