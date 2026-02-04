@@ -325,6 +325,7 @@ class VFIOBinder:
         self.group_id: Optional[str] = None
         self._bound = False
         self._attach = attach
+        self._we_bound_it = False  # Track if WE performed the binding (vs attaching to existing)
         self._path_manager = VFIOPathManager(bdf)
         self._device_info: Optional[DeviceInfo] = None
         self._privilege_manager = None
@@ -761,6 +762,38 @@ class VFIOBinder:
             VFIOBindError: If binding fails
             VFIOPermissionError: If permissions are insufficient
         """
+        # Check if device is already bound to vfio-pci
+        current_driver = self._path_manager.driver_path
+        if current_driver.exists():
+            driver_name = current_driver.resolve().name
+            if driver_name == "vfio-pci":
+                log_info_safe(
+                    logger,
+                    safe_format("Device {bdf} already bound to vfio-pci, attaching only", bdf=self.bdf),
+                    prefix="VFIO",
+                )
+                self._we_bound_it = False
+                self._bound = True
+                
+                # Still need to get group ID and attach
+                group_id = self._get_iommu_group()
+                self._acquire_group_lock(group_id)
+                
+                if self._attach:
+                    try:
+                        self._attach_group()
+                    except Exception as e:
+                        log_warning_safe(
+                            logger,
+                            safe_format(
+                                "Failed to attach IOMMU group for {bdf}: {err}",
+                                bdf=self.bdf,
+                                err=e
+                            ),
+                            prefix="VFIO",
+                        )
+                return
+        
         log_info_safe(
             logger,
             safe_format("Binding {bdf} to vfio-pci", bdf=self.bdf),
@@ -808,6 +841,7 @@ class VFIOBinder:
                     )
                     # Continue anyway - the device is bound
 
+            self._we_bound_it = True  # We performed the binding, so we should unbind on exit
             log_info_safe(
                 logger,
                 safe_format("Successfully bound {bdf} to vfio-pci", bdf=self.bdf),
@@ -928,7 +962,8 @@ class VFIOBinder:
     def __exit__(self, _exc_type, _exc_val, _exc_tb):
         """Context manager exit - ensures complete cleanup."""
         try:
-            if self._bound:
+            # Only unbind if WE performed the binding (not if we just attached to existing)
+            if self._bound and self._we_bound_it:
                 try:
                     self.unbind()
                 except Exception as e:
@@ -937,6 +972,12 @@ class VFIOBinder:
                         safe_format("Failed to unbind in cleanup: {err}", err=e),
                         prefix="VFIO",
                     )
+            elif self._bound:
+                log_info_safe(
+                    logger,
+                    safe_format("Leaving {bdf} bound to vfio-pci (was pre-bound)", bdf=self.bdf),
+                    prefix="VFIO",
+                )
         finally:
             # Always clean up device IDs and release lock, even if unbind fails
             self._cleanup_device_ids()
