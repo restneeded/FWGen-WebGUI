@@ -428,19 +428,9 @@ def rebuild_vfio_constants():
     script = project_root / "build_vfio_constants.sh"
     
     if not script.exists():
-        log_warning_safe(
-            logger, 
-            safe_format("VFIO constants script missing: {script}", script=script), 
-            prefix="VFIO"
-        )
         return False
     
     if not os.access(script, os.X_OK):
-        log_warning_safe(
-            logger,
-            safe_format("VFIO constants script not executable: {script}", script=script),
-            prefix="VFIO"
-        )
         return False
     
     try:
