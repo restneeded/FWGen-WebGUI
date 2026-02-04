@@ -105,10 +105,169 @@ For complete setup including IOMMU configuration, see the **[Installation Guide]
 
 ### Optional Requirements
 
-- **Podman** - For isolated Stage 2 templating (container does NOT access VFIO)
-- **DMA board** - pcileech_75t484_x1, pcileech_35t325_x4, or pcileech_100t484_x1
+- **Podman or Docker** - For isolated Stage 2 templating (container does NOT access VFIO)
+- **DMA board** - pcileech_enigma_x1, pcileech_75t484_x1, pcileech_35t325_x4, or pcileech_100t484_x1
 - **Vivado** - 2022.2+ for bitstream synthesis (Stage 3)
+- **bpftrace** - For advanced MMIO learning (`sudo apt install bpftrace`)
 
+## Web GUI (Point-and-Click Interface)
+
+The Web GUI provides a beginner-friendly interface for the entire firmware generation workflow:
+
+```bash
+# From repository checkout
+cd PCILeechFWGenerator
+sudo python3 gui/app.py
+```
+
+Then open http://localhost:5000 in your browser.
+
+**Web GUI Features:**
+- Visual device selection (shows all VFIO-bound PCIe devices)
+- Board selection with 15+ supported variants
+- One-click build with real-time progress
+- Automatic container-based firmware generation
+- Vivado integration for complete .bin generation
+
+### Web GUI Workflow
+
+1. **Bind your donor device to VFIO** (see VFIO Setup below)
+2. **Select your donor device** from the dropdown
+3. **Choose your target board** (e.g., pcileech_enigma_x1)
+4. **Click Build** - the tool will:
+   - Collect device data via VFIO (Stage 1)
+   - Generate firmware in container (Stage 2)
+   - Run Vivado synthesis (Stage 3)
+5. **Get your .bin file** in the output directory
+
+## VFIO Setup (Critical First Step)
+
+VFIO passthrough is **required** to read your donor device's configuration. This section covers common issues and solutions.
+
+### Enable IOMMU in BIOS/GRUB
+
+1. **Enable in BIOS**: Look for "VT-d" (Intel) or "AMD-Vi" (AMD) and enable it
+
+2. **Add kernel parameters** (edit `/etc/default/grub`):
+   ```bash
+   # Intel systems:
+   GRUB_CMDLINE_LINUX_DEFAULT="intel_iommu=on iommu=pt"
+   
+   # AMD systems:
+   GRUB_CMDLINE_LINUX_DEFAULT="amd_iommu=on iommu=pt"
+   ```
+
+3. **Update GRUB and reboot**:
+   ```bash
+   sudo update-grub
+   sudo reboot
+   ```
+
+4. **Verify IOMMU is enabled**:
+   ```bash
+   dmesg | grep -i iommu
+   # Should show "IOMMU enabled" or similar
+   ```
+
+### Load VFIO Modules
+
+```bash
+# Load modules (run every boot, or add to /etc/modules)
+sudo modprobe vfio
+sudo modprobe vfio_pci
+sudo modprobe vfio_iommu_type1
+
+# Verify modules loaded
+lsmod | grep vfio
+```
+
+### Bind Device to VFIO
+
+```bash
+# Find your donor device
+lspci -nn | grep -i ethernet  # or network, audio, etc.
+# Example output: 05:00.0 Ethernet controller [0200]: Realtek ... [10ec:8161]
+
+# Get the device's IOMMU group
+ls /sys/bus/pci/devices/0000:05:00.0/iommu_group/devices/
+# Note: ALL devices in the same group must be unbound
+
+# Unbind from current driver
+echo "0000:05:00.0" | sudo tee /sys/bus/pci/devices/0000:05:00.0/driver/unbind
+
+# Bind to vfio-pci (replace 10ec 8161 with YOUR vendor:device IDs)
+echo "10ec 8161" | sudo tee /sys/bus/pci/drivers/vfio-pci/new_id
+```
+
+### Common VFIO Binding Issues
+
+#### "Device or resource busy"
+Another driver is using the device. Unbind it first:
+```bash
+echo "0000:05:00.0" | sudo tee /sys/bus/pci/devices/0000:05:00.0/driver/unbind
+```
+
+#### "No such file or directory" for driver/unbind
+Device has no driver bound. Try binding directly:
+```bash
+echo "10ec 8161" | sudo tee /sys/bus/pci/drivers/vfio-pci/new_id
+```
+
+#### "IOMMU group has other devices"
+All devices in an IOMMU group must be bound to vfio-pci or have no driver:
+```bash
+# List all devices in the group
+ls /sys/bus/pci/devices/0000:05:00.0/iommu_group/devices/
+# Unbind each device that has a driver
+```
+
+#### "vfio: No such device"
+The vfio-pci module isn't loaded:
+```bash
+sudo modprobe vfio_pci
+```
+
+#### Permission denied accessing /dev/vfio/*
+Run with sudo or add your user to the vfio group:
+```bash
+sudo usermod -aG vfio $USER
+# Then log out and back in
+```
+
+### Verify VFIO Binding
+
+```bash
+# Check device is bound to vfio-pci
+ls -la /sys/bus/pci/devices/0000:05:00.0/driver
+# Should show: driver -> ../../../bus/pci/drivers/vfio-pci
+
+# Check VFIO device exists
+ls /dev/vfio/
+# Should show your IOMMU group number (e.g., "19")
+```
+
+## Container Setup (For Stage 2)
+
+The container handles firmware generation (Stage 2) without needing VFIO access:
+
+```bash
+# Build the container image
+podman build -t pcileech-fwgen -f Containerfile .
+
+# Or with Docker
+docker build -t pcileech-fwgen -f Containerfile .
+```
+
+The Web GUI and CLI automatically use the container if available.
+
+### Rebuilding the Container
+
+If you pull updates, rebuild the container:
+```bash
+git pull
+podman rmi pcileech-fwgen
+podman build -t pcileech-fwgen -f Containerfile .
+```
 
 ### CLI Commands
 
