@@ -69,7 +69,19 @@ COPY pyproject.toml setup.py setup.cfg ./
 
 # Install the package itself so `from pcileechfwgenerator.xxx` imports work
 # Note: Use regular install (not editable) since source is copied, not mounted
-RUN pip3 install --no-cache-dir .
+RUN pip3 install --no-cache-dir -v . 2>&1 | tail -50
+
+# DEBUG: Verify installation succeeded
+RUN echo "=== DEBUG: Checking pip installation ===" && \
+    pip3 show pcileechfwgenerator && \
+    echo "=== DEBUG: Checking site-packages ===" && \
+    ls -la /usr/local/lib/python3.12/dist-packages/ | grep -i pcileech || echo "NOT FOUND in dist-packages" && \
+    echo "=== DEBUG: Checking if module is importable ===" && \
+    python3 -c "import pcileechfwgenerator; print('SUCCESS: pcileechfwgenerator imported from', pcileechfwgenerator.__file__)" || echo "FAILED to import" && \
+    echo "=== DEBUG: Checking build module ===" && \
+    python3 -c "from pcileechfwgenerator import build; print('SUCCESS: build module found')" || echo "FAILED to import build" && \
+    echo "=== DEBUG: List package contents ===" && \
+    ls -la /usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/ 2>/dev/null | head -20 || echo "Package dir not found"
 
 # Copy voltcyclone-fpga from build stage (cloned during build)
 COPY --from=build /src/lib/voltcyclone-fpga ./lib/voltcyclone-fpga
@@ -81,6 +93,11 @@ COPY --from=build /src/vfio_constants_patched.py /usr/local/lib/python3.12/dist-
 # CRITICAL: Remove /app/src to prevent it from shadowing the installed package
 # The package is installed to site-packages, /app/src/ would interfere with imports
 RUN rm -rf /app/src
+
+# DEBUG: Final verification after cleanup
+RUN echo "=== DEBUG: Final import check ===" && \
+    python3 -c "import pcileechfwgenerator.build; print('SUCCESS: pcileechfwgenerator.build is importable')" || \
+    (echo "FAILED: Cannot import pcileechfwgenerator.build" && python3 -c "import sys; print('Python path:', sys.path)" && exit 1)
 
 # Copy and setup entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint
