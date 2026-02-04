@@ -63,8 +63,11 @@ BUILD_STATUS: Dict[str, Any] = {
     "log": [],
     "error": None,
     "output_file": None,
+    "error_lines": [],
 }
 BUILD_LOCK = threading.Lock()
+
+CONSOLE_ERROR_LOG: List[str] = []
 
 
 def load_config() -> Dict[str, Any]:
@@ -280,16 +283,20 @@ def run_build(bdf: str, board: str, output_dir: str):
         )
         
         progress = 20
-        error_keywords = ['error', 'fail', 'exception', 'traceback', 'critical', 
-                          'fatal', 'denied', 'not found', 'invalid', 'cannot', 
-                          'unable', 'refused', 'timeout', 'abort']
+        global CONSOLE_ERROR_LOG
         for line in iter(process.stdout.readline, ""):
             line = line.strip()
             if line:
                 update_status("Building", min(progress, 90), line)
                 
                 line_lower = line.lower()
-                if any(kw in line_lower for kw in error_keywords):
+                is_error = 'error' in line_lower or 'fail' in line_lower
+                
+                if is_error:
+                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    CONSOLE_ERROR_LOG.append(f"{timestamp} | {line}")
+                    if len(CONSOLE_ERROR_LOG) > 500:
+                        CONSOLE_ERROR_LOG = CONSOLE_ERROR_LOG[-500:]
                     log_error(f"[BUILD] {line}")
                 
                 if "collect" in line_lower:
@@ -535,26 +542,19 @@ def api_cleanup():
 
 @app.route("/api/error-log")
 def api_error_log():
-    """Get error log contents."""
-    if ERROR_LOG_FILE.exists():
-        try:
-            with open(ERROR_LOG_FILE, 'r') as f:
-                lines = f.readlines()[-100:]
-            return jsonify({"log": "".join(lines)})
-        except Exception as e:
-            return jsonify({"log": f"Error reading log: {e}"})
-    return jsonify({"log": ""})
+    """Get error log contents - returns red console lines."""
+    global CONSOLE_ERROR_LOG
+    if CONSOLE_ERROR_LOG:
+        return jsonify({"log": "\n".join(CONSOLE_ERROR_LOG[-100:])})
+    return jsonify({"log": "(No errors captured yet)"})
 
 
 @app.route("/api/error-log/clear", methods=["POST"])
 def api_clear_error_log():
     """Clear the error log."""
-    try:
-        with open(ERROR_LOG_FILE, 'w') as f:
-            f.write("")
-        return jsonify({"status": "cleared"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    global CONSOLE_ERROR_LOG
+    CONSOLE_ERROR_LOG = []
+    return jsonify({"status": "cleared"})
 
 
 if __name__ == "__main__":
