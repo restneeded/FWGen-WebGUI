@@ -1,31 +1,5 @@
 # PCILeech Firmware Generator
 
-## CI/CD Status
-
-[![CI](https://github.com/voltcyclone/PCILeechFWGenerator/workflows/CI/badge.svg?branch=main)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![SystemVerilog Validation](https://img.shields.io/badge/SystemVerilog-passing-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![Unit Tests](https://img.shields.io/badge/Unit%20Tests-passing-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![TUI Tests](https://img.shields.io/badge/TUI%20Tests-passing-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![Integration Tests](https://img.shields.io/badge/Integration%20Tests-passing-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![Packaging](https://img.shields.io/badge/Packaging-passing-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![Documentation](https://img.shields.io/badge/Documentation-passing-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-
-## Quality Metrics
-
-[![codecov](https://codecov.io/gh/ramseymcgrath/PCILeechFWGenerator/graph/badge.svg?token=JVX3C1WL86)](https://codecov.io/gh/ramseymcgrath/PCILeechFWGenerator)
-[![Code Quality](https://img.shields.io/badge/code%20quality-A-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions)
-[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://github.com/voltcyclone/PCILeechFWGenerator)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.txt)
-[![Latest Release](https://img.shields.io/github/v/release/ramseymcgrath/PCILeechFWGenerator?include_prereleases)](https://github.com/voltcyclone/PCILeechFWGenerator/releases)
-[![Downloads](https://img.shields.io/github/downloads/ramseymcgrath/PCILeechFWGenerator/total)](https://github.com/voltcyclone/PCILeechFWGenerator/releases)
-
-## Build Artifacts
-
-[![Package Build](https://img.shields.io/badge/packages-available-brightgreen)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![Wheel](https://img.shields.io/badge/wheel-✓-green)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-[![Source Distribution](https://img.shields.io/badge/sdist-✓-green)](https://github.com/voltcyclone/PCILeechFWGenerator/actions/workflows/ci.yml)
-
-![Discord](https://dcbadge.limes.pink/api/shield/429866199833247744)
 
 Generate authentic PCIe DMA firmware from real donor hardware using a **3-stage host-container-host pipeline**. This tool extracts donor configurations from a local device via VFIO and generates unique PCILeech FPGA bitstreams.
 
