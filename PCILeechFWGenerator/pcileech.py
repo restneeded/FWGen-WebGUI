@@ -856,18 +856,9 @@ def handle_build(args):
 # ──────────────────────────────────────────────────────────────────────────────
 
 def run_host_collect(args):
-    """Stage 1: probe device and write datastore on the host."""
+    """Stage 1: probe device and write datastore on the host using VFIO."""
     logger = get_logger(__name__)
-    try:
-        from pcileechfwgenerator.host_collect.collector import HostCollector
-    except (ImportError, ModuleNotFoundError) as e:
-        log_error_safe(
-            logger,
-            safe_format("Host collector module not found: {err}", err=str(e)),
-            prefix="BUILD",
-        )
-        return 1
-
+    
     datastore = Path(getattr(args, "datastore", "pcileech_datastore")).resolve()
     datastore.mkdir(parents=True, exist_ok=True)
     
@@ -883,25 +874,74 @@ def run_host_collect(args):
 
     log_info_safe(
         logger,
-        "Stage 1: Collecting device data on host (VFIO operations enabled)",
+        "Stage 1: Collecting device data on host (VFIO+MMIO enabled)",
         prefix="BUILD",
     )
 
-    collector = HostCollector(
-        args.bdf,
-        datastore,
-        logger,
-        enable_mmio_learning=enable_mmio_learning,
-        force_recapture=force_recapture,
-    )
-    rc = collector.run()
-    if rc == 0:
-        log_info_safe(
+    # Try to use full VFIO-based collector with BAR/MMIO learning
+    try:
+        from pcileechfwgenerator.cli.host_device_collector import HostDeviceCollector
+        
+        collector = HostDeviceCollector(
+            args.bdf,
+            logger=logger,
+            enable_mmio_learning=enable_mmio_learning,
+            force_recapture=force_recapture,
+        )
+        collected_data = collector.collect_device_context(datastore)
+        
+        if collected_data:
+            log_info_safe(
+                logger,
+                safe_format(
+                    "Host collect complete with BAR models: {has_bar}",
+                    has_bar=collected_data.get("collection_metadata", {}).get("has_bar_models", False)
+                ),
+                prefix="BUILD",
+            )
+            return 0
+        else:
+            log_error_safe(logger, "Host collection returned no data", prefix="BUILD")
+            return 1
+            
+    except ImportError as e:
+        log_warning_safe(
             logger,
-            safe_format("Host collect complete → {path}", path=str(datastore)),
+            safe_format("Full VFIO collector not available, using sysfs fallback: {err}", err=str(e)),
             prefix="BUILD",
         )
-    return rc
+        # Fallback to simple sysfs-based collector (no BAR models)
+        try:
+            from pcileechfwgenerator.host_collect.collector import HostCollector
+            collector = HostCollector(
+                args.bdf,
+                datastore,
+                logger,
+                enable_mmio_learning=enable_mmio_learning,
+                force_recapture=force_recapture,
+            )
+            rc = collector.run()
+            if rc == 0:
+                log_info_safe(
+                    logger,
+                    safe_format("Host collect (sysfs) complete → {path}", path=str(datastore)),
+                    prefix="BUILD",
+                )
+            return rc
+        except ImportError as e2:
+            log_error_safe(
+                logger,
+                safe_format("No host collector available: {err}", err=str(e2)),
+                prefix="BUILD",
+            )
+            return 1
+    except Exception as e:
+        log_error_safe(
+            logger,
+            safe_format("Host collection failed: {err}", err=str(e)),
+            prefix="BUILD",
+        )
+        return 1
 
 
 def _get_image_age_days(runtime: str, tag: str) -> Optional[int]:
