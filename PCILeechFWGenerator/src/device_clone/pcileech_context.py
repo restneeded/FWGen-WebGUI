@@ -881,6 +881,34 @@ class PCILeechContextBuilder:
             "vendor_id": device_identifiers.vendor_id,
             "device_id": device_identifiers.device_id,
         }
+        
+        # CRITICAL: Add config_space_hex and config_space_bytes at top level for COE generation
+        # The overlay generator needs these to create Vivado-compatible .coe files
+        if isinstance(config_space_data, dict):
+            if config_space_data.get("config_space_hex"):
+                context["config_space_hex"] = config_space_data["config_space_hex"]
+                log_info_safe(
+                    self.logger,
+                    safe_format(
+                        "Added config_space_hex to context: {length} chars",
+                        length=len(config_space_data["config_space_hex"]),
+                    ),
+                    prefix="CTX",
+                )
+            if config_space_data.get("raw_config_space"):
+                context["config_space_bytes"] = config_space_data["raw_config_space"]
+                data = config_space_data["raw_config_space"]
+                size = len(data) if hasattr(data, '__len__') else 0
+                log_info_safe(
+                    self.logger,
+                    safe_format(
+                        "Added config_space_bytes to context: {size} bytes",
+                        size=size,
+                    ),
+                    prefix="CTX",
+                )
+            # Also add config_space_data for overlay generator fallback
+            context["config_space_data"] = config_space_data
 
         # Expose critical board attributes at the top level to keep downstream
         # generators firmly non-interactive and ensure constraint builders can

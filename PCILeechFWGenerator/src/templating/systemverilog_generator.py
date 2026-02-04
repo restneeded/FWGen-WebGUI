@@ -400,6 +400,39 @@ class SystemVerilogGenerator:
                 )
                 or {}
             )
+        
+        # CRITICAL: Propagate config_space_hex and config_space_bytes for COE generation
+        # These are needed by the overlay generator to create the .coe files
+        if template_context.get("config_space_hex") and not enhanced_context.get("config_space_hex"):
+            enhanced_context["config_space_hex"] = template_context["config_space_hex"]
+            log_info_safe(
+                self.logger,
+                safe_format(
+                    "Propagated config_space_hex: {length} chars",
+                    length=len(template_context["config_space_hex"]),
+                ),
+                prefix=self.prefix,
+            )
+        
+        if template_context.get("config_space_bytes") and not enhanced_context.get("config_space_bytes"):
+            enhanced_context["config_space_bytes"] = template_context["config_space_bytes"]
+            log_info_safe(
+                self.logger,
+                safe_format(
+                    "Propagated config_space_bytes: {size} bytes",
+                    size=len(template_context["config_space_bytes"]),
+                ),
+                prefix=self.prefix,
+            )
+        
+        # Also propagate config_space_data if available
+        if template_context.get("config_space_data") and not enhanced_context.get("config_space_data"):
+            enhanced_context["config_space_data"] = template_context["config_space_data"]
+            log_info_safe(
+                self.logger,
+                "Propagated config_space_data dict",
+                prefix=self.prefix,
+            )
 
         # Set non-unique PCI register defaults (safe fallbacks)
         cs = enhanced_context.get("config_space")

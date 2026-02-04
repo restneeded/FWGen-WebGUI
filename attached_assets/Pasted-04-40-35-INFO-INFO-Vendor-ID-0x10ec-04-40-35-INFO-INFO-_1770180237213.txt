@@ -1,0 +1,96 @@
+04:40:35 │ INFO │ [INFO] Vendor ID: 0x10ec
+04:40:35 │ INFO │ [INFO] Device ID: 0x8161
+04:40:35 │ INFO │ [INFO] Class Code: 0x020000
+04:40:35 │ INFO │ [INFO] Revision ID: 0x15
+04:40:35 │ INFO │ [INFO] Command: 0x0007
+04:40:35 │ INFO │ [INFO] Status: 0x0010
+04:40:35 │ INFO │ [INFO] Header Type: 0x00
+04:40:35 │ INFO │ [INFO] Subsystem Vendor: 0x10ec
+04:40:35 │ INFO │ [INFO] Subsystem Device: 0x8168
+04:40:35 │ INFO │ [INFO] Cache Line Size: 16
+04:40:35 │ INFO │ [INFO] Latency Timer: 0
+04:40:35 │ INFO │ [INFO] BIST: 0x00
+04:40:35 │ INFO │ [INFO] Total BARs found: 3
+04:40:35 │ INFO │ [BARS] Active BARs found: 3
+04:40:35 │ INFO │ [BARS] BAR 0: io @ 0x0000000000003000 (32-bit, non-prefetchable, size=0x100)
+04:40:35 │ INFO │ [BARS] BAR 2: memory @ 0x0000000048404000 (64-bit, non-prefetchable, size=0x1000)
+04:40:35 │ INFO │ [BARS] BAR 4: memory @ 0x0000000048400000 (64-bit, non-prefetchable, size=0x4000)
+04:40:35 │ INFO │ [DEVI] Extracted device info: vendor=10ec device=8161 class=020000
+04:40:35 │ INFO │ [LOOKUP] Pre-fallback device_info (shape): {'command': 'str', 'status': 'str', 'cache_line_size': 'str', 'latency_timer': 'str', 'header_type': 'str', 'bist': 'str'}
+04:40:35 │ INFO │ [LOOKUP] Pre-fallback device_info (sanitized): {
+"bist": "0",
+"cache_line_size": "16",
+"command": "7",
+"header_type": "0",
+"latency_timer": "0",
+"status": "16"
+}
+04:40:35 │ INFO │ [CFG] Configuration space processed: VID=4332, DID=33121, Class=131072
+04:40:35 │ INFO │ [MSIX] Preloading MSI-X data from sysfs before VFIO binding
+04:40:35 │ INFO │ [PCICAP] MSI-X capability not found
+04:40:35 │ INFO │ [MSIX] No MSI-X capability found during preload
+04:40:35 │ INFO │ [PCIL] Building comprehensive template context
+04:40:35 │ INFO │ Building context for 0000:05:00.0 with none
+04:40:35 │ INFO │ [PWR] Waking device from D3hot
+04:40:35 │ INFO │ [BAR] ╔═════════════════════════════════════════════════════════════╗
+04:40:35 │ INFO │ [BAR] ║ BASE ADDRESS REGISTER DISCOVERY & ANALYSIS ║
+04:40:35 │ INFO │ [BAR] ╠═════════════════════════════════════════════════════════════╣
+04:40:35 │ INFO │ Starting VFIO device fd acquisition for 0000:05:00.0
+04:40:35 │ INFO │ [VFIO] Device 0000:05:00.0 is in IOMMU group 19
+04:40:35 │ WARNING│ [VFIO] [WARN] ensure_device_vfio_binding called: 0000:05:00.0 already bound to vfio-pci (re-check, not a rebind)
+04:40:35 │ INFO │ [VFIO] VFIO binding recheck passed for 0000:05:00.0 (IOMMU group 19)
+04:40:35 │ INFO │ [VFIO] Device 0000:05:00.0 bound to VFIO group 19
+04:40:35 │ INFO │ Starting VFIO device fd acquisition for 0000:05:00.0
+04:40:35 │ INFO │ [VFIO] Device 0000:05:00.0 is in IOMMU group 19
+04:40:35 │ WARNING│ [VFIO] [WARN] ensure_device_vfio_binding called: 0000:05:00.0 already bound to vfio-pci (re-check, not a rebind)
+04:40:35 │ INFO │ [VFIO] VFIO binding recheck passed for 0000:05:00.0 (IOMMU group 19)
+04:40:35 │ INFO │ [VFIO] Device 0000:05:00.0 bound to VFIO group 19
+04:40:35 │ INFO │ [BAR] ║ BAR2 @ 0x48404000 │ 4.00 KB │ 64-bit │ MEM ║
+04:40:35 │ INFO │ Starting VFIO device fd acquisition for 0000:05:00.0
+04:40:35 │ INFO │ [VFIO] Device 0000:05:00.0 is in IOMMU group 19
+04:40:35 │ WARNING│ [VFIO] [WARN] ensure_device_vfio_binding called: 0000:05:00.0 already bound to vfio-pci (re-check, not a rebind)
+04:40:35 │ INFO │ [VFIO] VFIO binding recheck passed for 0000:05:00.0 (IOMMU group 19)
+04:40:35 │ INFO │ [VFIO] Device 0000:05:00.0 bound to VFIO group 19
+04:40:35 │ INFO │ [BAR] ║ BAR4 @ 0x48400000 │ 16.00 KB │ 64-bit │ MEM ║
+04:40:35 │ INFO │ [BAR] ╠═════════════════════════════════════════════════════════════╣
+04:40:35 │ INFO │ [BAR] ║ DISCOVERED: 2/3 BARs │ MEMORY MAPPED: 0.02 MB ║
+04:40:35 │ INFO │ [BAR] ╚═════════════════════════════════════════════════════════════╝
+04:40:35 │ INFO │ [BAR] Primary BAR: index=4, size=0.02MB
+04:40:35 │ WARNING│ [SYSFS_BAR] Failed to enable memory decoding: [Errno 30] Read-only file system: '/sys/bus/pci/devices/0000:05:00.0/enable'
+04:40:35 │ ERROR │ BAR read requires root privileges (for mmap)
+04:40:35 │ WARNING│ [SYSFS_BAR] BAR sampling requires root privileges; skipping direct sampling
+04:40:35 │ INFO │ [MMIO] Skipping MMIO learning in host-context-only mode
+04:40:35 │ WARNING│ Device profile '10ec_8161' not found, using live device detection
+04:40:35 │ INFO │ [PCIL] Building board configuration for pcileech_enigma_x1
+04:40:35 │ INFO │ Discovering boards from pcileech-fpga repository...
+04:40:35 │ INFO │ [BOARDS] Discovered 17 boards from submodule
+04:40:35 │ INFO │ Discovered 17 boards
+04:40:35 │ INFO │ [PCIL] Board configuration loaded: xc7a75tfgg484-2
+04:40:35 │ INFO │ [PCIL] Loaded board XDC content for pcileech_enigma_x1 (6606 bytes)
+04:40:35 │ INFO │ [PCI_CAP] Loaded 21 default rules
+04:40:35 │ INFO │ [PCI_CAP] Discovered 10 capabilities
+04:40:35 │ WARNING│ [VFIO] [WARN] ensure_device_vfio_binding called: 0000:05:00.0 already bound to vfio-pci (re-check, not a rebind)
+04:40:35 │ INFO │ [VFIO] VFIO binding recheck passed for 0000:05:00.0 (IOMMU group 19)
+04:40:35 │ INFO │ [PCIL] Context built successfully: 10ec:8161:15
+04:40:35 │ INFO │ [PCIL] Template context built successfully with 54 top-level keys
+04:40:35 │ INFO │ Generating SystemVerilog modules
+04:40:35 │ ERROR │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+04:40:35 │ ERROR │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+04:40:35 │ WARNING│ [TEMPLATING] Device serial number unavailable; generated deterministic DSN: 0x034C7C008E6310EC
+04:40:35 │ INFO │ [SV_GEN] Generating configuration space overlay
+04:40:35 │ INFO │ [SV_GEN] Generating config space COE in compact Vivado format
+04:40:35 │ ERROR │ [SV_GEN] No config space data found. config_space_hex=0, config_space=dict
+04:40:35 │ ERROR │ [SV_GEN] Failed to generate config space COE: No config space data available for COE generation
+04:40:35 │ ERROR │ [SV_GEN] Overlay generation failed: Failed to generate config space COE: No config space data available for COE generation
+04:40:35 │ ERROR │ [SV_GEN] ERROR TYPE: Configuration Error
+CONTEXT: SystemVerilog generation
+DETAILS: No config space data available for COE generation
+SUGGESTION: Check your configuration settings and ensure they are valid.
+04:40:35 │ ERROR │ [PCIL] PCILeech firmware generation failed: SystemVerilog generation failed: ERROR TYPE: Configuration Error
+CONTEXT: SystemVerilog generation
+DETAILS: No config space data available for COE generation
+SUGGESTION: Check your configuration settings and ensure they are valid.
+04:40:35 │ ERROR │ [BUILD] Build failed: No config space data available for COE generation
+04:40:35 │ ERROR │ Build failed: Build failed: No config space data available for COE generation
+04:40:35 │ INFO │ [BUILD] Reproduce with: python3 -m pcileechfwgenerator.build --bdf 0000:05:00.0 --board pcileech_enigma_x1 --profile 30
+Build failed with exit code 1
