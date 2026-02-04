@@ -1327,17 +1327,49 @@ class FirmwareBuilder:
                     )
                 
                 # Use prefilled context from host, avoiding VFIO operations
+                # but still generate the .coe and SystemVerilog files using templates
+                self.build_logger.info(
+                    "Complete device context loaded from host - "
+                    "generating firmware from host data",
+                    prefix="HOST_CFG"
+                )
+                
+                # Generate SystemVerilog modules from host context using template rendering
+                from pcileechfwgenerator.templating import SVOverlayGenerator
+                from pcileechfwgenerator.templating.template_renderer import TemplateRenderer
+                
+                template_dir = Path(__file__).parent / "templates"
+                renderer = TemplateRenderer(template_dir=template_dir)
+                overlay_gen = SVOverlayGenerator(renderer=renderer)
+                
+                try:
+                    # Generate overlays (.coe files) using host context
+                    sv_modules = overlay_gen.generate_overlays(host_context)
+                    self.build_logger.info(
+                        safe_format(
+                            "Generated {count} overlay files from host context: {files}",
+                            count=len(sv_modules),
+                            files=list(sv_modules.keys()),
+                        ),
+                        prefix="HOST_CFG"
+                    )
+                except Exception as e:
+                    log_error_safe(
+                        self.logger,
+                        safe_format(
+                            "Failed to generate overlays from host context: {err}",
+                            err=str(e),
+                        ),
+                        prefix="HOST_CFG"
+                    )
+                    sv_modules = {}
+                
                 generation_result = {
                     "template_context": host_context,
-                    "systemverilog_modules": {},
+                    "systemverilog_modules": sv_modules,
                     "config_space_data": config_space_data,
                     "msix_data": host_context.get("msix_data"),
                 }
-                self.build_logger.info(
-                    "Complete device context loaded from host - "
-                    "skipping container VFIO operations",
-                    prefix="HOST_CFG"
-                )
                 self.build_logger.pop_phase("host_context_generation")
             else:
                 # Fallback to container-based generation with MSI-X preloading
