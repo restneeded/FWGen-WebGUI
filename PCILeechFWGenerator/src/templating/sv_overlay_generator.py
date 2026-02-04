@@ -179,67 +179,158 @@ class SVOverlayGenerator:
             # Get config space data from context - check multiple possible locations
             cfg_bytes = None
             
-            # Log available keys for debugging
-            log_debug_safe(
+            # Log ALL available keys for debugging
+            log_info_safe(
                 self.logger,
                 safe_format(
-                    "Context keys available: {keys}",
-                    keys=[k for k in context.keys() if 'config' in k.lower() or 'space' in k.lower()],
+                    "All context keys: {keys}",
+                    keys=list(context.keys()),
                 ),
                 prefix=self.prefix,
             )
             
+            # Log config-related keys specifically
+            config_keys = [k for k in context.keys() if 'config' in k.lower() or 'space' in k.lower()]
+            log_info_safe(
+                self.logger,
+                safe_format(
+                    "Config-related keys: {keys}",
+                    keys=config_keys,
+                ),
+                prefix=self.prefix,
+            )
+            
+            # Log values of config-related keys
+            for key in config_keys:
+                val = context.get(key)
+                val_type = type(val).__name__
+                val_len = len(val) if hasattr(val, '__len__') else 'N/A'
+                log_info_safe(
+                    self.logger,
+                    safe_format(
+                        "  {key}: type={val_type}, len={val_len}",
+                        key=key,
+                        val_type=val_type,
+                        val_len=val_len,
+                    ),
+                    prefix=self.prefix,
+                )
+            
             # Method 1: Direct config_space_bytes
+            log_info_safe(self.logger, "Trying Method 1: config_space_bytes", prefix=self.prefix)
             if context.get("config_space_bytes"):
                 data = context["config_space_bytes"]
+                log_info_safe(
+                    self.logger,
+                    safe_format("  Found config_space_bytes, type={dtype}", dtype=type(data).__name__),
+                    prefix=self.prefix,
+                )
                 if isinstance(data, (bytes, bytearray)):
                     cfg_bytes = bytes(data)
+                    log_info_safe(
+                        self.logger,
+                        safe_format("  SUCCESS: Got {size} bytes from config_space_bytes", size=len(cfg_bytes)),
+                        prefix=self.prefix,
+                    )
                 elif isinstance(data, str):
                     cfg_bytes = bytes.fromhex(data)
+                    log_info_safe(
+                        self.logger,
+                        safe_format("  SUCCESS: Converted hex string to {size} bytes", size=len(cfg_bytes)),
+                        prefix=self.prefix,
+                    )
+            else:
+                log_info_safe(self.logger, "  Not found", prefix=self.prefix)
             
             # Method 2: config_space_hex string
+            log_info_safe(self.logger, "Trying Method 2: config_space_hex", prefix=self.prefix)
             if not cfg_bytes and context.get("config_space_hex"):
                 hex_str = context["config_space_hex"]
+                log_info_safe(
+                    self.logger,
+                    safe_format("  Found config_space_hex, len={length}", length=len(hex_str) if hex_str else 0),
+                    prefix=self.prefix,
+                )
                 if isinstance(hex_str, str) and len(hex_str) >= 128:
                     try:
                         cfg_bytes = bytes.fromhex(hex_str)
+                        log_info_safe(
+                            self.logger,
+                            safe_format("  SUCCESS: Converted to {size} bytes", size=len(cfg_bytes)),
+                            prefix=self.prefix,
+                        )
                     except ValueError as e:
                         log_warning_safe(
                             self.logger,
-                            safe_format("Invalid config_space_hex: {err}", err=str(e)),
+                            safe_format("  FAILED: Invalid hex: {err}", err=str(e)),
                             prefix=self.prefix,
                         )
+                else:
+                    log_info_safe(self.logger, "  hex_str too short or not string", prefix=self.prefix)
+            elif not cfg_bytes:
+                log_info_safe(self.logger, "  Not found or already have bytes", prefix=self.prefix)
             
             # Method 3: config_space dict with data/raw_data
+            log_info_safe(self.logger, "Trying Method 3: config_space dict", prefix=self.prefix)
             config_space = context.get("config_space", {})
+            log_info_safe(
+                self.logger,
+                safe_format("  config_space type={dtype}", dtype=type(config_space).__name__),
+                prefix=self.prefix,
+            )
             if not cfg_bytes and isinstance(config_space, (bytes, bytearray)):
                 cfg_bytes = bytes(config_space)
+                log_info_safe(
+                    self.logger,
+                    safe_format("  SUCCESS: config_space is bytes, {size} bytes", size=len(cfg_bytes)),
+                    prefix=self.prefix,
+                )
             elif not cfg_bytes and isinstance(config_space, dict):
                 for key in ["data", "raw_data", "raw_config_space", "bytes"]:
                     if config_space.get(key):
                         data = config_space[key]
+                        log_info_safe(
+                            self.logger,
+                            safe_format("  Trying config_space[{key}], type={dtype}", key=key, dtype=type(data).__name__),
+                            prefix=self.prefix,
+                        )
                         if isinstance(data, (bytes, bytearray)):
                             cfg_bytes = bytes(data)
+                            log_info_safe(self.logger, safe_format("  SUCCESS: Got {size} bytes", size=len(cfg_bytes)), prefix=self.prefix)
                             break
                         elif isinstance(data, str):
                             try:
                                 cfg_bytes = bytes.fromhex(data)
+                                log_info_safe(self.logger, safe_format("  SUCCESS: Got {size} bytes", size=len(cfg_bytes)), prefix=self.prefix)
                                 break
                             except ValueError:
                                 continue
             
             # Method 4: config_space_data dict
+            log_info_safe(self.logger, "Trying Method 4: config_space_data dict", prefix=self.prefix)
             config_space_data = context.get("config_space_data", {})
+            log_info_safe(
+                self.logger,
+                safe_format("  config_space_data type={dtype}", dtype=type(config_space_data).__name__),
+                prefix=self.prefix,
+            )
             if not cfg_bytes and isinstance(config_space_data, dict):
                 for key in ["raw_config_space", "config_space_bytes", "data"]:
                     if config_space_data.get(key):
                         data = config_space_data[key]
+                        log_info_safe(
+                            self.logger,
+                            safe_format("  Trying config_space_data[{key}], type={dtype}", key=key, dtype=type(data).__name__),
+                            prefix=self.prefix,
+                        )
                         if isinstance(data, (bytes, bytearray)):
                             cfg_bytes = bytes(data)
+                            log_info_safe(self.logger, safe_format("  SUCCESS: Got {size} bytes", size=len(cfg_bytes)), prefix=self.prefix)
                             break
                         elif isinstance(data, str):
                             try:
                                 cfg_bytes = bytes.fromhex(data)
+                                log_info_safe(self.logger, safe_format("  SUCCESS: Got {size} bytes", size=len(cfg_bytes)), prefix=self.prefix)
                                 break
                             except ValueError:
                                 continue

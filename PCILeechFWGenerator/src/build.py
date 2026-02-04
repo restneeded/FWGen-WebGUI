@@ -1257,11 +1257,62 @@ class FirmwareBuilder:
                 self.build_logger.push_phase("host_context_generation")
                 self._phase("Using host-collected device context …")
                 
+                # Debug: Log all keys in host_context
+                self.build_logger.info(
+                    safe_format(
+                        "Host context keys: {keys}",
+                        keys=list(host_context.keys()),
+                    ),
+                    prefix="HOST_DBG"
+                )
+                
                 # Extract config space bytes for processing
                 config_space_hex = host_context.get("config_space_hex", "")
-                config_space_bytes =(
-                    bytes.fromhex(config_space_hex) if config_space_hex else b""   
+                self.build_logger.info(
+                    safe_format(
+                        "config_space_hex from host_context: {length} chars, empty={empty}",
+                        length=len(config_space_hex) if config_space_hex else 0,
+                        empty=not bool(config_space_hex),
+                    ),
+                    prefix="HOST_DBG"
                 )
+                config_space_bytes = b""
+                if config_space_hex:
+                    try:
+                        config_space_bytes = bytes.fromhex(config_space_hex)
+                        self.build_logger.info(
+                            safe_format(
+                                "Converted config_space_hex to bytes: {size} bytes",
+                                size=len(config_space_bytes),
+                            ),
+                            prefix="HOST_DBG"
+                        )
+                    except ValueError as e:
+                        self.build_logger.error(
+                            safe_format(
+                                "Failed to convert config_space_hex: {err}",
+                                err=str(e),
+                            ),
+                            prefix="HOST_DBG"
+                        )
+                else:
+                    self.build_logger.warning(
+                        "config_space_hex is empty - looking for alternative sources",
+                        prefix="HOST_DBG"
+                    )
+                    # Try to find config space from other locations
+                    if host_context.get("config_space_bytes"):
+                        config_space_bytes = host_context["config_space_bytes"]
+                        if isinstance(config_space_bytes, str):
+                            config_space_bytes = bytes.fromhex(config_space_bytes)
+                        config_space_hex = config_space_bytes.hex()
+                        self.build_logger.info(
+                            safe_format(
+                                "Found config_space_bytes in host_context: {size} bytes",
+                                size=len(config_space_bytes),
+                            ),
+                            prefix="HOST_DBG"
+                        )
                 
                 # Build config_space_data with device IDs from host context
                 config_space_data = {
@@ -1341,18 +1392,59 @@ class FirmwareBuilder:
                 # Ensure config space data is in host_context for overlay generation
                 if config_space_bytes:
                     host_context["config_space_bytes"] = config_space_bytes
+                    self.build_logger.info(
+                        safe_format(
+                            "Added config_space_bytes to host_context: {size} bytes",
+                            size=len(config_space_bytes),
+                        ),
+                        prefix="HOST_DBG"
+                    )
+                else:
+                    self.build_logger.error(
+                        "config_space_bytes is empty - COE generation will fail!",
+                        prefix="HOST_DBG"
+                    )
+                    
                 if config_space_hex:
                     host_context["config_space_hex"] = config_space_hex
+                    self.build_logger.info(
+                        safe_format(
+                            "Added config_space_hex to host_context: {hex_len} chars",
+                            hex_len=len(config_space_hex),
+                        ),
+                        prefix="HOST_DBG"
+                    )
+                else:
+                    self.build_logger.error(
+                        "config_space_hex is empty - COE generation will fail!",
+                        prefix="HOST_DBG"
+                    )
+                    
                 host_context["config_space_data"] = config_space_data
                 
                 self.build_logger.info(
                     safe_format(
-                        "Config space data: {size} bytes, hex: {hex_len} chars",
+                        "Final config space status: bytes={size}, hex={hex_len}",
                         size=len(config_space_bytes) if config_space_bytes else 0,
                         hex_len=len(config_space_hex) if config_space_hex else 0,
                     ),
                     prefix="HOST_CFG"
                 )
+                
+                # Debug: Verify first 16 bytes of config space (should contain VID/DID)
+                if config_space_bytes and len(config_space_bytes) >= 16:
+                    first_dword = int.from_bytes(config_space_bytes[0:4], byteorder='little')
+                    vid = first_dword & 0xFFFF
+                    did = (first_dword >> 16) & 0xFFFF
+                    self.build_logger.info(
+                        safe_format(
+                            "Config space first DWORD: 0x{dword:08X} (VID=0x{vid:04X}, DID=0x{did:04X})",
+                            dword=first_dword,
+                            vid=vid,
+                            did=did,
+                        ),
+                        prefix="HOST_DBG"
+                    )
                 
                 template_dir = Path(__file__).parent / "templates"
                 renderer = TemplateRenderer(template_dir=template_dir)
