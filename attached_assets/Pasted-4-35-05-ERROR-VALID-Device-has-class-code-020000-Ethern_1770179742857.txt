@@ -1,0 +1,20 @@
+4:35:05 │ ERROR │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+04:35:05 │ ERROR │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+04:35:05 │ WARNING│ [TEMPLATING] Device serial number unavailable; generated deterministic DSN: 0x034C7C008E6310EC
+04:35:05 │ INFO │ [SV_GEN] Generating configuration space overlay
+04:35:05 │ INFO │ [SV_GEN] Generating config space COE in compact Vivado format
+04:35:05 │ ERROR │ [SV_GEN] No config space data available for COE generation
+04:35:05 │ ERROR │ [SV_GEN] Failed to generate config space COE: No config space data available for COE generation
+04:35:05 │ ERROR │ [SV_GEN] Overlay generation failed: Failed to generate config space COE: No config space data available for COE generation
+04:35:05 │ ERROR │ [SV_GEN] ERROR TYPE: Configuration Error
+CONTEXT: SystemVerilog generation
+DETAILS: No config space data available for COE generation
+SUGGESTION: Check your configuration settings and ensure they are valid.
+04:35:05 │ ERROR │ [PCIL] PCILeech firmware generation failed: SystemVerilog generation failed: ERROR TYPE: Configuration Error
+CONTEXT: SystemVerilog generation
+DETAILS: No config space data available for COE generation
+SUGGESTION: Check your configuration settings and ensure they are valid.
+04:35:05 │ ERROR │ [BUILD] Build failed: No config space data available for COE generation
+04:35:05 │ ERROR │ Build failed: Build failed: No config space data available for COE generation
+04:35:05 │ INFO │ [BUILD] Reproduce with: python3 -m pcileechfwgenerator.build --bdf 0000:05:00.0 --board pcileech_enigma_x1 --profile 30
+Build failed with exit code 1

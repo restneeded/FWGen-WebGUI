@@ -176,30 +176,86 @@ class SVOverlayGenerator:
         )
 
         try:
-            # Get config space data from context
-            config_space = context.get("config_space", {})
-            config_space_hex = context.get("config_space_hex", "")
-            
-            # Try to get raw bytes
+            # Get config space data from context - check multiple possible locations
             cfg_bytes = None
-            if isinstance(config_space, (bytes, bytearray)):
-                cfg_bytes = bytes(config_space)
-            elif isinstance(config_space, dict):
-                cfg_bytes = config_space.get("data") or config_space.get("raw_data")
-                if isinstance(cfg_bytes, str):
-                    # Convert hex string to bytes
-                    cfg_bytes = bytes.fromhex(cfg_bytes)
             
-            # Fallback to config_space_hex
-            if not cfg_bytes and config_space_hex:
-                try:
-                    cfg_bytes = bytes.fromhex(config_space_hex)
-                except ValueError:
-                    pass
+            # Log available keys for debugging
+            log_debug_safe(
+                self.logger,
+                safe_format(
+                    "Context keys available: {keys}",
+                    keys=[k for k in context.keys() if 'config' in k.lower() or 'space' in k.lower()],
+                ),
+                prefix=self.prefix,
+            )
+            
+            # Method 1: Direct config_space_bytes
+            if context.get("config_space_bytes"):
+                data = context["config_space_bytes"]
+                if isinstance(data, (bytes, bytearray)):
+                    cfg_bytes = bytes(data)
+                elif isinstance(data, str):
+                    cfg_bytes = bytes.fromhex(data)
+            
+            # Method 2: config_space_hex string
+            if not cfg_bytes and context.get("config_space_hex"):
+                hex_str = context["config_space_hex"]
+                if isinstance(hex_str, str) and len(hex_str) >= 128:
+                    try:
+                        cfg_bytes = bytes.fromhex(hex_str)
+                    except ValueError as e:
+                        log_warning_safe(
+                            self.logger,
+                            safe_format("Invalid config_space_hex: {err}", err=str(e)),
+                            prefix=self.prefix,
+                        )
+            
+            # Method 3: config_space dict with data/raw_data
+            config_space = context.get("config_space", {})
+            if not cfg_bytes and isinstance(config_space, (bytes, bytearray)):
+                cfg_bytes = bytes(config_space)
+            elif not cfg_bytes and isinstance(config_space, dict):
+                for key in ["data", "raw_data", "raw_config_space", "bytes"]:
+                    if config_space.get(key):
+                        data = config_space[key]
+                        if isinstance(data, (bytes, bytearray)):
+                            cfg_bytes = bytes(data)
+                            break
+                        elif isinstance(data, str):
+                            try:
+                                cfg_bytes = bytes.fromhex(data)
+                                break
+                            except ValueError:
+                                continue
+            
+            # Method 4: config_space_data dict
+            config_space_data = context.get("config_space_data", {})
+            if not cfg_bytes and isinstance(config_space_data, dict):
+                for key in ["raw_config_space", "config_space_bytes", "data"]:
+                    if config_space_data.get(key):
+                        data = config_space_data[key]
+                        if isinstance(data, (bytes, bytearray)):
+                            cfg_bytes = bytes(data)
+                            break
+                        elif isinstance(data, str):
+                            try:
+                                cfg_bytes = bytes.fromhex(data)
+                                break
+                            except ValueError:
+                                continue
             
             if not cfg_bytes:
+                # Log what we found for debugging
+                log_error_safe(
+                    self.logger,
+                    safe_format(
+                        "No config space data found. config_space_hex={hex_len}, config_space={cs_type}",
+                        hex_len=len(context.get("config_space_hex", "") or ""),
+                        cs_type=type(context.get("config_space")).__name__,
+                    ),
+                    prefix=self.prefix,
+                )
                 error_msg = "No config space data available for COE generation"
-                log_error_safe(self.logger, error_msg, prefix=self.prefix)
                 raise TemplateRenderError(error_msg)
             
             # Ensure we have 4KB of config space (1024 DWORDs)

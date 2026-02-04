@@ -1338,6 +1338,22 @@ class FirmwareBuilder:
                 from pcileechfwgenerator.templating import SVOverlayGenerator
                 from pcileechfwgenerator.templating.template_renderer import TemplateRenderer
                 
+                # Ensure config space data is in host_context for overlay generation
+                if config_space_bytes:
+                    host_context["config_space_bytes"] = config_space_bytes
+                if config_space_hex:
+                    host_context["config_space_hex"] = config_space_hex
+                host_context["config_space_data"] = config_space_data
+                
+                self.build_logger.info(
+                    safe_format(
+                        "Config space data: {size} bytes, hex: {hex_len} chars",
+                        size=len(config_space_bytes) if config_space_bytes else 0,
+                        hex_len=len(config_space_hex) if config_space_hex else 0,
+                    ),
+                    prefix="HOST_CFG"
+                )
+                
                 template_dir = Path(__file__).parent / "templates"
                 renderer = TemplateRenderer(template_dir=template_dir)
                 overlay_gen = SVOverlayGenerator(
