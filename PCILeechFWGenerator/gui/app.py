@@ -265,6 +265,8 @@ def run_build(bdf: str, board: str, output_dir: str):
         
         update_status("Collecting", 15, "Collecting device configuration...")
         
+        config = load_config()
+        
         cmd = [
             sys.executable, str(PROJECT_ROOT / "pcileech.py"), "build",
             "--bdf", bdf,
