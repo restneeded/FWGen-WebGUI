@@ -749,8 +749,25 @@ if {{[catch {{file copy -force $BITSTREAM_FILE $OUTPUT_DIR/}} copy_error]}} {{
     error [format "Failed to copy bitstream: %s" $copy_error]
 }}
 
+# Convert .bit to .bin for SPI flash programming
+set BIN_NAME [file rootname $BITSTREAM_NAME].bin
+set BIN_FILE [file join $OUTPUT_DIR $BIN_NAME]
+
+puts "Converting bitstream to .bin format for flash programming..."
+if {{[catch {{
+    write_cfgmem -format bin -interface spix4 -size 16 \
+        -loadbit "up 0x0 $BITSTREAM_FILE" \
+        -file $BIN_FILE -force
+}} cfgmem_error]}} {{
+    puts "WARNING: Failed to generate .bin file: $cfgmem_error"
+    puts "The .bit file is still available at: $OUTPUT_DIR/$BITSTREAM_NAME"
+}} else {{
+    puts "Binary file generated: $BIN_FILE"
+}}
+
 puts "Build completed successfully!"
 puts "Bitstream location: $OUTPUT_DIR/$BITSTREAM_NAME"
+puts "Binary file location: $BIN_FILE"
 """
         )
 

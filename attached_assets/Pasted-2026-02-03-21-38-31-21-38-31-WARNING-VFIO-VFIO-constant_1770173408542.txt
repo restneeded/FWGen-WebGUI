@@ -1,0 +1,48 @@
+2026-02-03 21:38:31 | 21:38:31 │ WARNING│ [VFIO] VFIO constants rebuild failed - will use defaults
+2026-02-03 21:38:33 | [1/2] STEP 8/8: RUN mkdir -p src/cli &&     chmod +x build_vfio_constants.sh &&     (./build_vfio_constants.sh && cp src/cli/vfio_constants.py vfio_constants_patched.py) ||     (echo "⚠ VFIO constants build failed, using original" && cp src/cli/vfio_constants.py vfio_constants_patched.py) &&     echo "Content of patched file:" && head -20 vfio_constants_patched.py | grep -A 10 "Ioctl numbers" || echo "No ioctl numbers section found"
+2026-02-03 21:38:43 | adding 'pcileechfwgenerator/utils/context_error_messages.py'
+2026-02-03 21:38:43 | adding 'pcileechfwgenerator/utils/error_recovery.py'
+2026-02-03 21:38:43 | adding 'pcileechfwgenerator/vivado_handling/vivado_error_reporter.py'
+2026-02-03 21:38:47 | [2/2] STEP 13/24: RUN echo "=== DEBUG: Checking pip installation ===" &&     pip3 show pcileechfwgenerator &&     echo "=== DEBUG: Checking site-packages ===" &&     ls -la /usr/local/lib/python3.12/dist-packages/ | grep -i pcileech || echo "NOT FOUND in dist-packages" &&     echo "=== DEBUG: Checking if module is importable ===" &&     python3 -c "import pcileechfwgenerator; print('SUCCESS: pcileechfwgenerator imported from', pcileechfwgenerator.__file__)" || echo "FAILED to import" &&     echo "=== DEBUG: Checking build module ===" &&     python3 -c "from pcileechfwgenerator import build; print('SUCCESS: build module found')" || echo "FAILED to import build" &&     echo "=== DEBUG: List package contents ===" &&     ls -la /usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/ 2>/dev/null | head -20 || echo "Package dir not found"
+2026-02-03 21:38:49 | -rw-r--r--  1 root root  17097 Feb  4 02:38 error_utils.py
+2026-02-03 21:39:24 | [2/2] STEP 17/24: RUN echo "=== DEBUG: Final import check ===" &&     python3 -c "import pcileechfwgenerator.build; print('SUCCESS: pcileechfwgenerator.build is importable')" ||     (echo "FAILED: Cannot import pcileechfwgenerator.build" && python3 -c "import sys; print('Python path:', sys.path)" && exit 1)
+2026-02-03 21:40:14 | 02:40:14 │ WARNING│ [TEMPLATE] Board template validation failed - build may fail
+2026-02-03 21:40:14 | 02:40:14 │ WARNING│ [SYSFS_BAR] Failed to enable memory decoding: [Errno 30] Read-only file system: '/sys/bus/pci/devices/0000:05:00.0/enable'
+2026-02-03 21:40:14 | 02:40:14 │ ERROR  │ BAR read requires root privileges (for mmap)
+2026-02-03 21:40:14 | 02:40:14 │ WARNING│ [MMIO] MMIO learning failed: [Errno 13] Permission denied: '.pcileech_cache'
+2026-02-03 21:40:14 | 02:40:14 │ ERROR  │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+2026-02-03 21:40:14 | 02:40:14 │ ERROR  │ [VALID] Device has class_code=020000 (Ethernet Controller). If the source device is NOT an Ethernet controller, this indicates a fallback value was used instead of reading from hardware. This will cause incorrect device enumeration in Windows/Linux.
+2026-02-03 21:40:14 | 02:40:14 │  INFO  │ [VALID] Validation Report: 0 errors, 0 warnings, 19 info
+2026-02-03 21:41:17 | #                 # Fallback: try read_ip if import_files fails
+2026-02-03 21:41:17 | #                 puts "Import failed, trying read_ip: $import_err"
+2026-02-03 21:41:17 | #                     puts "WARNING: Failed to add IP $ip_name: $read_err"
+2026-02-03 21:41:17 | #         puts "WARNING: generate_target failed for $nm : $gen_err"
+2026-02-03 21:41:24 | #         puts "ERROR: Cannot unlock IPs: [join [get_property NAME $final_locked] \",\"]"
+2026-02-03 21:41:24 | #         puts "ERROR: Try deleting the project and regenerating from scratch."
+2026-02-03 21:41:24 | #         error "Unrecoverable locked IP cores: [join [get_property NAME $final_locked] \",\"] . Please delete the project or manually remove/regenerate these IP cores and retry."
+2026-02-03 21:43:28 | WARNING: [Project 1-498] One or more constraints failed evaluation while reading constraint file [/home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/constraints/pcileech_enigma_x1.xdc] and the design contains unresolved black boxes. These constraints will be read post-synthesis (as long as their source constraint file is marked as used_in_implementation) and should be applied correctly then. You should review the constraints listed in the file [.Xil/pcileech_enigma_x1_top_propImpl.xdc] and check the run log file to verify that these constraints were correctly applied.
+2026-02-03 21:44:43 | Synthesis finished with 0 errors, 0 critical warnings and 62 warnings.
+2026-02-03 21:44:43 | 271 Infos, 115 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:44:43 | #     error "Synthesis failed"
+2026-02-03 21:44:53 | 31 Infos, 5 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:44:53 | INFO: [Project 1-461] DRC finished with 0 Errors
+2026-02-03 21:45:03 | 61 Infos, 5 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:45:03 | INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+2026-02-03 21:45:03 | INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors, 42 Warnings
+2026-02-03 21:45:23 | INFO: [Place 46-56] BUFG insertion identified 1 candidate nets. Inserted BUFG: 0, Replicated BUFG Driver: 0, Skipped due to Placement/Routing Conflicts: 1, Skipped due to Timing Degradation: 0, Skipped due to netlist editing failed: 0.
+2026-02-03 21:45:23 | 97 Infos, 5 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:45:53 | 106 Infos, 5 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:45:53 | INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+2026-02-03 21:45:53 | Number of Failed Nets               = 18065
+2026-02-03 21:45:53 | (Failed Nets is the sum of unrouted and partially routed nets)
+2026-02-03 21:45:58 | Number of Failed Nets               = 0
+2026-02-03 21:45:58 | (Failed Nets is the sum of unrouted and partially routed nets)
+2026-02-03 21:45:58 | 123 Infos, 5 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:45:58 | 133 Infos, 6 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:46:27 | INFO: [Vivado 12-3199] DRC finished with 0 Errors, 44 Warnings
+2026-02-03 21:46:27 | 14 Infos, 44 Warnings, 0 Critical Warnings and 0 Errors encountered.
+2026-02-03 21:46:27 | #     error "Implementation failed"
+2026-02-03 21:46:27 | #     error [format "Bitstream not found at %s" $BITSTREAM_FILE]
+2026-02-03 21:46:27 | # if {[catch {file copy -force $BITSTREAM_FILE $OUTPUT_DIR/} copy_error]} {
+2026-02-03 21:46:27 | #     error [format "Failed to copy bitstream: %s" $copy_error]
+2026-02-03 21:46:27 | Error report written to: /home/topg/Him/FWGen-
