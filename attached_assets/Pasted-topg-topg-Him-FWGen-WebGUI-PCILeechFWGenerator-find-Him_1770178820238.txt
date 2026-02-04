@@ -1,0 +1,18 @@
+topg@topg:~/Him/FWGen-WebGUI/PCILeechFWGenerator$ find ~/Him/FWGen-WebGUI/PCILeechFWGenerator/lib/voltcyclone-fpga/EnigmaX1/ip -name "*.coe" -ls
+ 12191186     12 -rw-rw-r--   1 topg     topg         9556 Feb  3 16:49 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/lib/voltcyclone-fpga/EnigmaX1/ip/pcileech_cfgspace.coe
+ 12191185     12 -rw-rw-r--   1 topg     topg         9556 Feb  3 16:49 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/lib/voltcyclone-fpga/EnigmaX1/ip/pcileech_bar_zero4k.coe
+ 12191187     12 -rw-rw-r--   1 topg     topg         9556 Feb  3 16:49 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/lib/voltcyclone-fpga/EnigmaX1/ip/pcileech_cfgspace_writemask.coe
+topg@topg:~/Him/FWGen-WebGUI/PCILeechFWGenerator$ find ~/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output -name "*.coe" -ls
+ 12326823     20 -rw-r--r--   1 root     root        19798 Feb  3 23:12 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/ip/pcileech_cfgspace.coe
+ 12326824     12 -rw-rw-r--   1 root     root         9556 Feb  3 16:49 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/ip/pcileech_bar_zero4k.coe
+ 12326825     12 -rw-r--r--   1 root     root         9707 Feb  3 23:12 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/ip/pcileech_cfgspace_writemask.coe
+ 12327082     12 -rw-r--r--   1 root     root         9556 Feb  3 16:49 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/vivado_project/pcileech_pcileech_enigma_x1.srcs/sources_1/ip/bram_bar_zero4k/pcileech_bar_zero4k.coe
+ 12327112     12 -rw-r--r--   1 root     root         9707 Feb  3 23:12 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/vivado_project/pcileech_pcileech_enigma_x1.srcs/sources_1/ip/drom_pcie_cfgspace_writemask/pcileech_cfgspace_writemask.coe
+ 12327004     20 -rw-r--r--   1 root     root        19798 Feb  3 23:12 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/pcileech_enigma_x1/vivado_project/pcileech_pcileech_enigma_x1.srcs/sources_1/ip/bram_pcie_cfgspace/pcileech_cfgspace.coe
+ 12326193     12 -rw-r--r--   1 dnsmasq  systemd-journal     9556 Feb  3 22:54 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/ip/pcileech_cfgspace.coe
+ 12326199     12 -rw-r--r--   1 dnsmasq  systemd-journal     9556 Feb  3 22:54 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/ip/pcileech_bar_zero4k.coe
+ 12326202     12 -rw-r--r--   1 dnsmasq  systemd-journal     9556 Feb  3 22:54 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/ip/pcileech_cfgspace_writemask.coe
+ 12326252     20 -rw-r--r--   1 dnsmasq  systemd-journal    19798 Feb  3 23:12 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/src/pcileech_cfgspace.coe
+ 12326253     12 -rw-r--r--   1 dnsmasq  systemd-journal     9707 Feb  3 23:12 /home/topg/Him/FWGen-WebGUI/PCILeechFWGenerator/pcileech_datastore/output/src/pcileech_cfgspace_writemask.coe
+topg@topg:~/Him/FWGen-WebGUI/PCILeechFWGenerator$ 
+
