@@ -15,11 +15,14 @@ from typing import Any, Dict, Optional
 
 
 class DataclassJSONEncoder(json.JSONEncoder):
-    """Custom JSON encoder that handles dataclasses."""
+    """Custom JSON encoder that handles dataclasses and TemplateObject."""
     
     def default(self, obj):
         if is_dataclass(obj) and not isinstance(obj, type):
             return asdict(obj)
+        # Handle TemplateObject (hybrid dict/object wrapper)
+        if hasattr(obj, "_data") and hasattr(obj, "_converted_attrs"):
+            return obj._data
         return super().default(obj)
 
 from pcileechfwgenerator.cli.vfio_handler import VFIOBinder
