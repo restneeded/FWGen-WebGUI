@@ -9,9 +9,18 @@ for VFIO operations inside the container.
 import json
 import logging
 import time
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
+
+
+class DataclassJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder that handles dataclasses."""
+    
+    def default(self, obj):
+        if is_dataclass(obj) and not isinstance(obj, type):
+            return asdict(obj)
+        return super().default(obj)
 
 from pcileechfwgenerator.cli.vfio_handler import VFIOBinder
 from pcileechfwgenerator.device_clone.config_space_manager import ConfigSpaceManager
@@ -333,7 +342,7 @@ class HostDeviceCollector:
         # Save complete device context
         context_file = output_dir / "device_context.json"
         with open(context_file, "w") as f:
-            json.dump(data, f, indent=2)
+            json.dump(data, f, indent=2, cls=DataclassJSONEncoder)
 
         # Validate that the file was written correctly
         try:

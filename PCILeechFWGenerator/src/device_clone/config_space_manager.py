@@ -301,14 +301,17 @@ class ConfigSpaceManager:
                 self._vfio_binder = VFIOBinder(self.bdf, attach=True)
                 self._vfio_binder.bind()
 
-                def _cleanup_bind():
-                    try:
-                        if self._vfio_binder and self._vfio_binder.is_bound:
-                            self._vfio_binder.unbind()
-                    except Exception:
-                        pass
+                # Only register cleanup if we actually bound the device
+                # (not if we just attached to an already-bound device)
+                if self._vfio_binder._we_bound_it:
+                    def _cleanup_bind():
+                        try:
+                            if self._vfio_binder and self._vfio_binder.is_bound:
+                                self._vfio_binder.unbind()
+                        except Exception:
+                            pass
 
-                atexit.register(_cleanup_bind)
+                    atexit.register(_cleanup_bind)
 
             else:
                 # Ensure still bound
