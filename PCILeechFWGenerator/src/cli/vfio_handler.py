@@ -775,10 +775,8 @@ class VFIOBinder:
                 self._we_bound_it = False
                 self._bound = True
                 
-                # Still need to get group ID and attach
-                group_id = self._get_iommu_group()
-                self._acquire_group_lock(group_id)
-                
+                # No lock needed - we're just attaching to read, not modifying binding
+                # The process that bound the device should hold any necessary lock
                 if self._attach:
                     try:
                         self._attach_group()
