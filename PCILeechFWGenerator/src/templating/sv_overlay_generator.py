@@ -151,44 +151,109 @@ class SVOverlayGenerator:
         # Make a copy to avoid modifying original
         prepared = dict(context)
 
-        # Add header if not present
+        # For .coe files, use empty header - Vivado expects minimal format
+        # The .coe format uses semicolon comments (;) not C-style (//)
         if "header" not in prepared:
-            prepared["header"] = generate_tcl_header_comment(
-                "PCILeech Configuration Space Overlay",
-                generator="SVOverlayGenerator",
-                description="Device-specific configuration space data",
-            )
+            prepared["header"] = ""  # Empty header for clean .coe output
 
         return prepared
 
     def _generate_config_space_coe(
         self, context: Dict[str, Any]
     ) -> str:
-        """Generate the configuration space .coe file."""
-        log_debug_safe(
+        """Generate the configuration space .coe file in Vivado-compatible format.
+        
+        Vivado requires a compact .coe format:
+        - memory_initialization_radix=16;
+        - memory_initialization_vector=
+        - Comma-separated hex values, multiple per line
+        - Ending with semicolon
+        """
+        log_info_safe(
             self.logger,
-            "Rendering pcileech_cfgspace.coe template",
+            "Generating config space COE in compact Vivado format",
             prefix=self.prefix,
         )
 
         try:
-            template_path = "sv/pcileech_cfgspace.coe.j2"
-            content = self.renderer.render_template(template_path, context)
-
-            log_debug_safe(
+            # Get config space data from context
+            config_space = context.get("config_space", {})
+            config_space_hex = context.get("config_space_hex", "")
+            
+            # Try to get raw bytes
+            cfg_bytes = None
+            if isinstance(config_space, (bytes, bytearray)):
+                cfg_bytes = bytes(config_space)
+            elif isinstance(config_space, dict):
+                cfg_bytes = config_space.get("data") or config_space.get("raw_data")
+                if isinstance(cfg_bytes, str):
+                    # Convert hex string to bytes
+                    cfg_bytes = bytes.fromhex(cfg_bytes)
+            
+            # Fallback to config_space_hex
+            if not cfg_bytes and config_space_hex:
+                try:
+                    cfg_bytes = bytes.fromhex(config_space_hex)
+                except ValueError:
+                    pass
+            
+            if not cfg_bytes:
+                error_msg = "No config space data available for COE generation"
+                log_error_safe(self.logger, error_msg, prefix=self.prefix)
+                raise TemplateRenderError(error_msg)
+            
+            # Ensure we have 4KB of config space (1024 DWORDs)
+            cfg_bytes = cfg_bytes[:4096].ljust(4096, b'\x00')
+            
+            # Get device IDs to inject into first DWORD
+            device_config = context.get("device_config", {})
+            vendor_id = device_config.get("vendor_id", "")
+            device_id = device_config.get("device_id", "")
+            
+            # Log the IDs being used
+            log_info_safe(
                 self.logger,
                 safe_format(
-                    "Generated config space overlay ({size} bytes)",
+                    "Config space with Vendor=0x{vendor} Device=0x{device}",
+                    vendor=vendor_id,
+                    device=device_id,
+                ),
+                prefix=self.prefix,
+            )
+            
+            # Convert to DWORDs (little-endian)
+            dwords = []
+            for i in range(0, len(cfg_bytes), 4):
+                dword = int.from_bytes(cfg_bytes[i:i+4], byteorder='little')
+                dwords.append(f"{dword:08x}")
+            
+            # Build compact COE format (4 values per line)
+            lines = ["memory_initialization_radix=16;", "memory_initialization_vector=", ""]
+            
+            for i in range(0, len(dwords), 4):
+                line_data = dwords[i:i+4]
+                if i + 4 < len(dwords):
+                    lines.append(",".join(line_data) + ",")
+                else:
+                    lines.append(",".join(line_data) + ";")
+            
+            content = "\n".join(lines)
+            
+            log_info_safe(
+                self.logger,
+                safe_format(
+                    "Generated compact config space COE ({size} bytes, {dwords} DWORDs)",
                     size=len(content),
+                    dwords=len(dwords),
                 ),
                 prefix=self.prefix,
             )
 
             return content
 
-        except TemplateRenderError as e:
+        except Exception as e:
             error_msg = safe_format(
-                "Failed to render config space template: {error}",
+                "Failed to generate config space COE: {error}",
                 error=str(e),
             )
             log_error_safe(
