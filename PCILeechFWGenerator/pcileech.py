@@ -1238,7 +1238,7 @@ def _run_in_container(args, runtime: str, datastore: Path, output_dir: Path, log
         "pcileech-fwgen",
         "python3",
         "-m",
-        "src.build",
+        "pcileechfwgenerator.build",
         "--bdf", args.bdf,
         "--board", args.board,
         "--output", "/datastore/output",
