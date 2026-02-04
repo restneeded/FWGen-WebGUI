@@ -74,16 +74,13 @@ RUN pip3 install --no-cache-dir .
 # Copy voltcyclone-fpga from build stage (cloned during build)
 COPY --from=build /src/lib/voltcyclone-fpga ./lib/voltcyclone-fpga
 
-# Copy the patched VFIO constants from build stage
-COPY --from=build /src/vfio_constants_patched.py ./src/cli/vfio_constants.py
+# Copy the patched VFIO constants to the INSTALLED package location
+# This replaces the installed vfio_constants.py with the patched version
+COPY --from=build /src/vfio_constants_patched.py /usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/cli/vfio_constants.py
 
-# Ensure __init__.py files exist in directories that don't have them
-# IMPORTANT: Do NOT overwrite existing __init__.py files that have actual content
-RUN for dir in $(find ./src -type d); do \
-        if [ ! -f "$dir/__init__.py" ]; then \
-            touch "$dir/__init__.py"; \
-        fi; \
-    done
+# CRITICAL: Remove /app/src to prevent it from shadowing the installed package
+# The package is installed to site-packages, /app/src/ would interfere with imports
+RUN rm -rf /app/src
 
 # Copy and setup entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint
