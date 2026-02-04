@@ -465,14 +465,7 @@ def rebuild_vfio_constants():
             prefix="VFIO",
         )
         return False
-    except (OSError, PermissionError) as e:
-        log_warning_safe(
-            logger,
-            safe_format(
-                "VFIO constants script execution error: {error}", error=str(e)
-            ),
-            prefix="VFIO",
-        )
+    except (OSError, PermissionError):
         return False
 
 

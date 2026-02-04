@@ -273,6 +273,10 @@ def run_build(bdf: str, board: str, output_dir: str):
             container_flag
         ]
         
+        vivado_path = config.get("vivado_path", "")
+        if vivado_path:
+            cmd.extend(["--vivado-path", vivado_path])
+        
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
