@@ -1,0 +1,12 @@
+2026-02-03 21:33:34 | adding 'utils/context_error_messages.py'
+2026-02-03 21:33:34 | adding 'utils/error_recovery.py'
+2026-02-03 21:33:34 | adding 'vivado_handling/vivado_error_reporter.py'
+2026-02-03 21:33:53 | [2/2] STEP 13/24: RUN echo "=== DEBUG: Checking pip installation ===" &&     pip3 show pcileechfwgenerator &&     echo "=== DEBUG: Checking site-packages ===" &&     ls -la /usr/local/lib/python3.12/dist-packages/ | grep -i pcileech || echo "NOT FOUND in dist-packages" &&     echo "=== DEBUG: Checking if module is importable ===" &&     python3 -c "import pcileechfwgenerator; print('SUCCESS: pcileechfwgenerator imported from', pcileechfwgenerator.__file__)" || echo "FAILED to import" &&     echo "=== DEBUG: Checking build module ===" &&     python3 -c "from pcileechfwgenerator import build; print('SUCCESS: build module found')" || echo "FAILED to import build" &&     echo "=== DEBUG: List package contents ===" &&     ls -la /usr/local/lib/python3.12/dist-packages/pcileechfwgenerator/ 2>/dev/null | head -20 || echo "Package dir not found"
+2026-02-03 21:33:56 | ModuleNotFoundError: No module named 'pcileechfwgenerator'
+2026-02-03 21:33:56 | FAILED to import
+2026-02-03 21:33:56 | ModuleNotFoundError: No module named 'pcileechfwgenerator'
+2026-02-03 21:33:56 | FAILED to import build
+2026-02-03 21:34:31 | [2/2] STEP 17/24: RUN echo "=== DEBUG: Final import check ===" &&     python3 -c "import pcileechfwgenerator.build; print('SUCCESS: pcileechfwgenerator.build is importable')" ||     (echo "FAILED: Cannot import pcileechfwgenerator.build" && python3 -c "import sys; print('Python path:', sys.path)" && exit 1)
+2026-02-03 21:34:32 | ModuleNotFoundError: No module named 'pcileechfwgenerator.build'
+2026-02-03 21:34:32 | FAILED: Cannot import pcileechfwgenerator.build
+2026-02-03 21:34:33 | Error: building at STEP "RUN echo "=== DEBUG: Final import check ===" &&     python3 -c "import pcileechfwgenerator.build; print('SUCCESS: pcileechfwgenerator.build is importable')" ||     (echo "FAILED: Cannot import pcileechfwgenerator.build" && python3 -c "import sys; print('Python path:', sys.path)" && exit 1)": while running runtime: exit status 1

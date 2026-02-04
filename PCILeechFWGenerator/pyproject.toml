@@ -65,12 +65,6 @@ version_scheme = "no-guess-dev"
 [tool.setuptools]
 package-dir = {"pcileechfwgenerator" = "src"}
 include-package-data = true
-
-[tool.setuptools.package-data]
-"pcileechfwgenerator.templates" = ["*.j2", "*.json", "*.yaml", "*.yml"]
-"pcileechfwgenerator.templates.sv" = ["*.j2", "*.sv", "*.coe"]
-"pcileechfwgenerator.templates.python" = ["*.j2", "*.py"]
-
 packages = [
     "pcileechfwgenerator",
     "pcileechfwgenerator.behavioral",
@@ -98,6 +92,11 @@ packages = [
     "pcileechfwgenerator.utils",
     "pcileechfwgenerator.vivado_handling",
 ]
+
+[tool.setuptools.package-data]
+"pcileechfwgenerator.templates" = ["*.j2", "*.json", "*.yaml", "*.yml"]
+"pcileechfwgenerator.templates.sv" = ["*.j2", "*.sv", "*.coe"]
+"pcileechfwgenerator.templates.python" = ["*.j2", "*.py"]
 
 [tool.pylint.messages_control]
 # Disable the line-too-long check
