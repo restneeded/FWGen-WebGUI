@@ -120,13 +120,13 @@ install_kernel_headers() {
     log_success "Kernel headers are available"
 }
 
-# Verify VFIO availability
+# Verify VFIO availability (optional - script works without VFIO access)
 check_vfio() {
     log_info "Checking VFIO availability..."
     
     if [ ! -c /dev/vfio/vfio ]; then
-        log_error "/dev/vfio/vfio device not found"
-        log_error "Make sure VFIO is loaded and container has --device=/dev/vfio/vfio"
+        log_warning "/dev/vfio/vfio not available - using fallback constants"
+        log_info "This is normal during container build or before VFIO modules are loaded"
         return 1
     fi
     
