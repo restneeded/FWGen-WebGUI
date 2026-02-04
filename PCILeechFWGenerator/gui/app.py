@@ -280,17 +280,25 @@ def run_build(bdf: str, board: str, output_dir: str):
         )
         
         progress = 20
+        error_keywords = ['error', 'fail', 'exception', 'traceback', 'critical', 
+                          'fatal', 'denied', 'not found', 'invalid', 'cannot', 
+                          'unable', 'refused', 'timeout', 'abort']
         for line in iter(process.stdout.readline, ""):
             line = line.strip()
             if line:
                 update_status("Building", min(progress, 90), line)
-                if "collect" in line.lower():
+                
+                line_lower = line.lower()
+                if any(kw in line_lower for kw in error_keywords):
+                    log_error(f"[BUILD] {line}")
+                
+                if "collect" in line_lower:
                     progress = 30
-                elif "template" in line.lower() or "generat" in line.lower():
+                elif "template" in line_lower or "generat" in line_lower:
                     progress = 50
-                elif "vivado" in line.lower():
+                elif "vivado" in line_lower:
                     progress = 70
-                elif "complete" in line.lower() or "success" in line.lower():
+                elif "complete" in line_lower or "success" in line_lower:
                     progress = 95
                 else:
                     progress = min(progress + 1, 90)
